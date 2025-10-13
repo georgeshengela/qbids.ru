@@ -1,0 +1,29 @@
+"Create a modern, sleek, and highly engaging hero section for a penny auction website. The hero section's primary purpose is to announce an upcoming auction for the Samsung Galaxy Z Fold 7, which will begin in exactly 48 hours.
+
+Design & Layout:
+
+The aesthetic should be futuristic, exclusive, and premium. Use a dark, elegant background (deep navy or charcoal gray) with luminous, electric accent colors (like neon blue, violet, or a vibrant magenta) to highlight key information.
+
+The layout should be clean and uncluttered. Use a strong visual hierarchy to guide the user's eye.
+
+The main visual element should be a high-quality, dynamic image or short video clip of the Samsung Galaxy Z Fold 7. The product should be presented in a way that feels aspirational and high-tech, perhaps with subtle animations or a glossy finish.
+
+The content should be centrally located or placed on one side to make the countdown and headline the absolute focus.
+
+Content & Information:
+
+Headline: Use a bold, powerful headline that creates a sense of exclusivity and excitement. Examples: "The Ultimate Bid is Coming." "Samsung Galaxy Z Fold 7: Auction Starts Soon." or "Your Chance to Win the Future."
+
+Sub-headline: A brief, compelling sentence that reinforces the value proposition and creates a sense of urgency. For example: "Get ready to bid on the Samsung Galaxy Z Fold 7 for a fraction of the retail price."
+
+Countdown Timer: This is the most critical element. The timer must be large, visually striking, and animated. It should clearly display the time remaining until the auction begins. The format should be "Days : Hours : Minutes : Seconds". The digits themselves should be a prominent accent color and change with a smooth, fluid animation.
+
+Call-to-Action (CTA): The CTA button should be a different color than the accent color and stand out. Since the auction hasn't started, the button should not say "Bid Now." Instead, it should encourage a different action to build your user base. Good options are:
+
+"Get a Reminder" (to capture email addresses)
+
+"Create an Account" (to get users registered and ready to bid)
+
+"Learn How It Works" (to inform new users and build confidence)
+
+Social Proof (Optional but Recommended): A small line of text below the CTA that hints at the popularity of the event. For example: "Join thousands of bidders already registered."

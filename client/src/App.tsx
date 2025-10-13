@@ -15,6 +15,9 @@ import AuctionDetail from "@/pages/auction-detail";
 import BidHistory from "@/pages/bid-history";
 import HowItWorks from "@/pages/how-it-works";
 import Profile from "@/pages/profile";
+import TopUp from "@/pages/topup";
+import PaymentSuccess from "@/pages/payment-success";
+import PaymentCancel from "@/pages/payment-cancel";
 import Support from "@/pages/support";
 import AuctionRules from "@/pages/auction-rules";
 import PrivacyPolicy from "@/pages/privacy-policy";
@@ -24,18 +27,32 @@ import NotFound from "@/pages/not-found";
 import { Footer } from "@/components/footer";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { initGA } from "./lib/analytics";
 import { WelcomeModal } from "@/components/welcome-modal";
+import { CompleteProfileModal } from "@/components/complete-profile-modal";
 import { CookieBanner } from "@/components/cookie-banner";
 
 function Router() {
   // Track page views when routes change
   useAnalytics();
-  const { user, showWelcomeModal, setShowWelcomeModal } = useAuth();
-  
+  const { user } = useAuth();
+  const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false);
 
-  
+  // Check for complete profile modal flag after login/registration
+  useEffect(() => {
+    const shouldShowModal = localStorage.getItem('showCompleteProfileModal');
+    console.log('Checking complete profile modal flag:', shouldShowModal, 'User:', user?.username);
+    if (shouldShowModal && user) {
+      console.log('Showing complete profile modal for user:', user.username);
+      setShowCompleteProfileModal(true);
+      localStorage.removeItem('showCompleteProfileModal');
+    }
+  }, [user]);
+
+  // Debug log
+  console.log('Complete profile modal state:', showCompleteProfileModal);
+
   return (
     <>
       <ScrollToTop />
@@ -51,6 +68,9 @@ function Router() {
         <Route path="/bid-history" component={BidHistory} />
         <Route path="/how-it-works" component={HowItWorks} />
         <Route path="/profile" component={Profile} />
+        <Route path="/topup" component={TopUp} />
+        <Route path="/payment-success" component={PaymentSuccess} />
+        <Route path="/payment-cancel" component={PaymentCancel} />
         <Route path="/support" component={Support} />
         <Route path="/auction-rules" component={AuctionRules} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
@@ -60,23 +80,15 @@ function Router() {
       </Switch>
       <Footer />
       
-      {/* Welcome Modal for new users */}
-      {user && showWelcomeModal && (
-        <WelcomeModal
-          isOpen={showWelcomeModal}
-          onClose={() => {
-            console.log('Closing welcome modal');
-            setShowWelcomeModal(false);
-          }}
-          username={user.username}
-        />
-      )}
+      {/* Complete Profile Modal */}
+      <CompleteProfileModal 
+        isOpen={showCompleteProfileModal} 
+        onClose={() => setShowCompleteProfileModal(false)}
+        onComplete={() => setShowCompleteProfileModal(false)}
+      />
       
       {/* Cookie Banner for first-time visitors */}
       <CookieBanner />
-      
-      {/* Debug info */}
-      {console.log('App render - user:', user?.username, 'showWelcomeModal:', showWelcomeModal)}
       
 
     </>

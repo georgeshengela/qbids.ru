@@ -15,6 +15,7 @@ interface AuthResponse {
 
 let globalUser: User | null = null;
 let globalLoading = true;
+let authInitPromise: Promise<void> | null = null;
 
 export function useAuth() {
   const queryClient = useQueryClient();
@@ -34,31 +35,34 @@ export function useAuth() {
   }, [user]);
 
   useEffect(() => {
-    if (globalLoading) {
-      // Only check auth once on app startup
-      fetch("/api/auth/me", { credentials: "include" })
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-          return { user: null };
-        })
-        .then(data => {
+    // If we've already initialized, use the cached result
+    if (!globalLoading) {
+      setUser(globalUser);
+      setIsLoading(false);
+      return;
+    }
+
+    // Start a single, shared auth initialization if not already started
+    if (!authInitPromise) {
+      authInitPromise = fetch("/api/auth/me", { credentials: "include" })
+        .then((res) => (res.ok ? res.json() : { user: null }))
+        .then((data) => {
           globalUser = data.user || null;
-          globalLoading = false;
-          setUser(globalUser);
-          setIsLoading(false);
         })
         .catch(() => {
           globalUser = null;
+        })
+        .finally(() => {
           globalLoading = false;
-          setUser(null);
-          setIsLoading(false);
+          authInitPromise = null;
         });
-    } else {
+    }
+
+    // Subscribe to the shared initialization promise
+    authInitPromise.then(() => {
       setUser(globalUser);
       setIsLoading(false);
-    }
+    });
   }, []);
 
   const loginMutation = useMutation({
@@ -75,21 +79,16 @@ export function useAuth() {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (credentials: { username: string; password: string }) => {
+    mutationFn: async (credentials: { username: string; email: string; password: string }) => {
       const response = await apiRequest("POST", "/api/auth/register", credentials);
       return response.json() as Promise<AuthResponse>;
     },
     onSuccess: (data) => {
       globalUser = data.user;
       setUser(data.user);
-      // Set flag in localStorage to show welcome modal
-      localStorage.setItem('showWelcomeModal', 'true');
-      console.log('Registration success - setting localStorage flag and showing modal in 500ms');
-      // Show welcome modal after a short delay to ensure auth modal closes first
-      setTimeout(() => {
-        console.log('Timeout reached - showing welcome modal');
-        setShowWelcomeModal(true);
-      }, 500);
+      // Set flag in localStorage to show complete profile modal
+      localStorage.setItem('showCompleteProfileModal', 'true');
+      console.log('Registration success - setting localStorage flag for profile completion');
       // Invalidate all queries to refresh data after registration
       queryClient.invalidateQueries();
     },

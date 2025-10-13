@@ -8,8 +8,10 @@ services:
   - type: web
     name: qbids-kg
     env: node
+    region: oregon
     buildCommand: npm install && npm run db:push && npm run build
     startCommand: npm start
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production

@@ -1,5 +1,5 @@
 import { 
-  users, auctions, bids, prebids, botSettings, bots, auctionBots, settings,
+  users, auctions, bids, prebids, botSettings, bots, auctionBots, settings, transactions,
   type User, type InsertUser, 
   type Auction, type InsertAuction,
   type Bid, type InsertBid,
@@ -7,7 +7,8 @@ import {
   type BotSettings, type InsertBotSettings,
   type Bot, type InsertBot,
   type AuctionBot, type InsertAuctionBot,
-  type Settings, type InsertSettings
+  type Settings, type InsertSettings,
+  type Transaction, type InsertTransaction
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -105,6 +106,14 @@ export interface IStorage {
   // Settings methods
   getSettings(): Promise<Settings | undefined>;
   updateSettings(settings: Partial<InsertSettings>): Promise<Settings>;
+  
+  // Transaction methods
+  createTransaction(transaction: InsertTransaction): Promise<Transaction>;
+  getTransaction(id: string): Promise<Transaction | undefined>;
+  getTransactionByInvoiceId(invoiceId: string): Promise<Transaction | undefined>;
+  updateTransaction(id: string, data: Partial<InsertTransaction>): Promise<Transaction>;
+  getUserTransactions(userId: string, limit?: number): Promise<Transaction[]>;
+  addBidsToUser(userId: string, bidsAmount: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -267,7 +276,6 @@ export class DatabaseStorage implements IStorage {
         createdAt: auctions.createdAt,
         displayId: auctions.displayId,
         timerSeconds: auctions.timerSeconds,
-        isBidPackage: auctions.isBidPackage,
         winner: {
           id: users.id,
           username: users.username,
@@ -280,8 +288,6 @@ export class DatabaseStorage implements IStorage {
           password: users.password,
           ipAddress: users.ipAddress,
           createdAt: users.createdAt,
-          dateOfBirth: users.dateOfBirth,
-          gender: users.gender,
         }
       })
       .from(auctions)
@@ -625,12 +631,7 @@ export class DatabaseStorage implements IStorage {
     `);
 
     return {
-      users: usersWithStats.rows as (User & { 
-        totalBids: number; 
-        wonAuctions: number; 
-        totalSpent: number; 
-        lastLogin?: string;
-      })[],
+      users: usersWithStats.rows,
       total,
       page,
       limit,
@@ -899,6 +900,47 @@ export class DatabaseStorage implements IStorage {
       .where(eq(settings.id, existing.id))
       .returning();
     return updated;
+  }
+
+  // Transaction methods
+  async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
+    const [newTransaction] = await db.insert(transactions).values(transaction).returning();
+    return newTransaction;
+  }
+
+  async getTransaction(id: string): Promise<Transaction | undefined> {
+    const [transaction] = await db.select().from(transactions).where(eq(transactions.id, id));
+    return transaction || undefined;
+  }
+
+  async getTransactionByInvoiceId(invoiceId: string): Promise<Transaction | undefined> {
+    const [transaction] = await db.select().from(transactions).where(eq(transactions.digisellerInvoiceId, invoiceId));
+    return transaction || undefined;
+  }
+
+  async updateTransaction(id: string, data: Partial<InsertTransaction>): Promise<Transaction> {
+    const [updated] = await db
+      .update(transactions)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(transactions.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getUserTransactions(userId: string, limit: number = 50): Promise<Transaction[]> {
+    return await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.userId, userId))
+      .orderBy(desc(transactions.createdAt))
+      .limit(limit);
+  }
+
+  async addBidsToUser(userId: string, bidsAmount: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ bidBalance: sql`${users.bidBalance} + ${bidsAmount}` })
+      .where(eq(users.id, userId));
   }
 }
 

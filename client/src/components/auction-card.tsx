@@ -43,6 +43,7 @@ export function AuctionCard({ auction, bids, timeLeft }: AuctionCardProps) {
   });
 
   const lastBid = bids[0];
+  const isUserLeading = !!(user && lastBid && !lastBid.isBot && lastBid.user?.id === user.id);
   const nextBidAmount = (parseFloat(auction.currentPrice) + parseFloat(auction.bidIncrement)).toFixed(2);
 
   const formatTime = (seconds: number) => {
@@ -107,10 +108,10 @@ export function AuctionCard({ auction, bids, timeLeft }: AuctionCardProps) {
         <Button
           className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105"
           onClick={handlePlaceBid}
-          disabled={bidMutation.isPending || !isAuthenticated}
+          disabled={bidMutation.isPending || !isAuthenticated || isUserLeading}
         >
           <i className="fas fa-hand-paper mr-2"></i>
-          {t("placeBid")} (+{formatCurrency(auction.bidIncrement)})
+          {`${t("placeBid")} (+${formatCurrency(auction.bidIncrement)})`}
         </Button>
 
         {lastBid && (

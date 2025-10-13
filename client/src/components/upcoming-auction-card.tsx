@@ -13,10 +13,11 @@ interface UpcomingAuctionCardProps {
   auction: Auction;
   startsIn: number;
   prebidsCount: number;
+  hasPrebid?: boolean;
 }
 
-export function UpcomingAuctionCard({ auction, startsIn, prebidsCount }: UpcomingAuctionCardProps) {
-  const { isAuthenticated } = useAuth();
+export function UpcomingAuctionCard({ auction, startsIn, prebidsCount, hasPrebid }: UpcomingAuctionCardProps) {
+  const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { formatCurrency } = useSettings();
@@ -31,7 +32,10 @@ export function UpcomingAuctionCard({ auction, startsIn, prebidsCount }: Upcomin
         title: t("prebidSuccess"),
         description: t("prebidNotification"),
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/auctions"] });
+      // Ensure the auctions list refreshes immediately after a successful prebid
+      queryClient.refetchQueries({ queryKey: ["/api/auctions"], type: "active" });
+      queryClient.refetchQueries({ queryKey: ["/api/users/stats"] });
+
     },
     onError: (error: any) => {
       // Extract error message from JSON response
@@ -58,6 +62,8 @@ export function UpcomingAuctionCard({ auction, startsIn, prebidsCount }: Upcomin
       });
     },
   });
+
+  const disablePrebid = prebidMutation.isPending || !isAuthenticated || !!hasPrebid;
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -135,7 +141,7 @@ export function UpcomingAuctionCard({ auction, startsIn, prebidsCount }: Upcomin
         <Button
           className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3 rounded-xl text-sm font-semibold hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
           onClick={handlePrebid}
-          disabled={prebidMutation.isPending || !isAuthenticated}
+          disabled={disablePrebid}
         >
           {prebidMutation.isPending ? (
             <>

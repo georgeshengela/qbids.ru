@@ -15,6 +15,198 @@ import { socketService } from "@/lib/socket";
 import { createSlug } from "@/lib/utils";
 import type { Auction, Bid } from "@/types/auction";
 
+// Samsung Galaxy Z Fold 7 Hero Countdown Component
+function SamsungHeroCountdown({ formatCurrency, auctionsData }: { 
+  formatCurrency: (amount: number) => string;
+  auctionsData?: { live: Auction[]; upcoming: Auction[]; finished: Auction[] };
+}) {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [hasLoadedData, setHasLoadedData] = useState(false);
+
+  useEffect(() => {
+    // Find the QB/1113 Samsung auction
+    const samsungAuction = auctionsData?.upcoming?.find(auction => 
+      auction.title.toLowerCase().includes('samsung galaxy z fold 7') ||
+      auction.title.toLowerCase().includes('qb/1113')
+    );
+    
+    const updateCountdown = () => {
+      const now = Date.now();
+      let difference = 0;
+      
+      if (samsungAuction) {
+        // Mark that we have real data and use real auction start time
+        setHasLoadedData(true);
+        const auctionStart = new Date(samsungAuction.startTime).getTime();
+        difference = auctionStart - now;
+      } else if (hasLoadedData) {
+        // If we previously had data but don't now, use fallback
+        const auctionStart = Date.now() + (48 * 60 * 60 * 1000);
+        difference = auctionStart - now;
+      } else {
+        // Show zeros while loading real data
+        difference = 0;
+      }
+      
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        });
+      } else {
+        // Show zeros when no valid time difference
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [auctionsData, hasLoadedData]);
+
+  return (
+    <section className="relative min-h-screen bg-white overflow-hidden">
+      {/* Clean background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50"></div>
+        <div className="absolute top-0 left-0 w-full h-full opacity-5">
+          <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-200 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-purple-200 rounded-full blur-3xl"></div>
+        </div>
+      </div>
+
+      <div className="relative z-10 max-w-[1504px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start min-h-screen pt-8 sm:pt-16 pb-4">
+          
+          {/* Left Content */}
+          <div className="space-y-6 sm:space-y-10 flex flex-col justify-start order-1 lg:order-1">
+            {/* Badge */}
+            <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg">
+              <div className="w-2 h-2 bg-white rounded-full mr-2 sm:mr-3 animate-pulse"></div>
+              <span className="text-xs sm:text-sm font-semibold tracking-wide">ЭКСКЛЮЗИВНАЯ ПРЕМЬЕРА</span>
+            </div>
+            
+            {/* Main headline */}
+            <div className="space-y-4 sm:space-y-6">
+              <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-gray-900 leading-none tracking-tight">
+                Samsung Galaxy
+                <br />
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                  Z Fold 7
+                </span>
+              </h1>
+              
+              <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 leading-relaxed font-light max-w-lg">
+                Первый в мире аукцион революционного складного смартфона
+              </p>
+              
+              <div className="flex items-center space-x-2 sm:space-x-3 text-gray-500">
+                <i className="fas fa-star text-yellow-500 text-sm sm:text-base"></i>
+                <span className="text-sm sm:text-base">Официальная модель • Гарантия Samsung • Новый в упаковке</span>
+                <i className="fas fa-star text-yellow-500 text-sm sm:text-base"></i>
+              </div>
+            </div>
+
+            {/* Countdown Timer */}
+            <div className="space-y-4 sm:space-y-8">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
+                Аукцион начинается через
+              </h2>
+              
+              <div className="flex space-x-2 sm:space-x-4">
+                {[
+                  { value: timeLeft.days, label: 'дней' },
+                  { value: timeLeft.hours, label: 'часов' },
+                  { value: timeLeft.minutes, label: 'минут' },
+                  { value: timeLeft.seconds, label: 'секунд' }
+                ].map((unit, index) => (
+                  <div key={unit.label} className="flex items-center space-x-2 sm:space-x-4">
+                    <div className="text-center">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl border border-gray-100 transform hover:scale-105 transition-transform duration-300">
+                        <span className="text-lg sm:text-2xl lg:text-3xl font-black text-gray-800">
+                          {unit.value.toString().padStart(2, '0')}
+                        </span>
+                      </div>
+                      <span className="block text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 uppercase tracking-wide font-medium">
+                        {unit.label}
+                      </span>
+                    </div>
+                    {index < 3 && (
+                      <div className="text-lg sm:text-2xl text-gray-400 font-light">:</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Call to action */}
+            <div className="space-y-3 sm:space-y-4">
+              <button 
+                onClick={() => window.location.href = '/auction/samsung-galaxy-z-fold-7-qb-1113'}
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg sm:text-xl font-bold py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-300"
+              >
+                <i className="fas fa-bell mr-2 sm:mr-3"></i>
+                Уведомить о старте аукциона
+              </button>
+              
+              <button className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white text-base sm:text-lg font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300">
+                <i className="fas fa-user-plus mr-2"></i>
+                Создать аккаунт
+              </button>
+            </div>
+          </div>
+
+          {/* Right Content - Product & Pricing */}
+          <div className="space-y-6 sm:space-y-8 flex flex-col justify-start order-2 lg:order-2">
+            
+            {/* Product showcase */}
+            <div className="relative max-w-sm sm:max-w-lg mx-auto">
+              <div className="aspect-square bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl border border-gray-100">
+                <div className="relative h-full">
+                  <img 
+                    src="https://www.spark.co.nz/content/dam/spark/images/product-images/devices/phones/samsung/z-series/z-fold7/zfold7-blue-shadow-1.png" 
+                    alt="Samsung Galaxy Z Fold 7" 
+                    className="w-full h-full object-contain hover:scale-105 transition-transform duration-700"
+                  />
+                </div>
+              </div>
+              
+              <div className="absolute -top-4 -right-4 sm:-top-6 sm:-right-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-2 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-lg">
+                <i className="fas fa-crown mr-1 sm:mr-2"></i>
+                Premium Edition
+              </div>
+            </div>
+
+            {/* Pricing comparison */}
+            <div className="space-y-4 sm:space-y-6">
+              <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-100">
+                <div className="flex justify-between items-center mb-4 sm:mb-6">
+                  <span className="text-gray-600 text-base sm:text-lg">Розничная цена</span>
+                  <span className="text-red-500 line-through text-2xl sm:text-3xl font-bold">{formatCurrency(179900)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-800 font-semibold text-base sm:text-lg">Стартовая цена аукциона</span>
+                  <span className="text-green-600 text-3xl sm:text-4xl font-black">{formatCurrency(0.01)}</span>
+                </div>
+              </div>
+              
+              <div className="text-center py-4 sm:py-6">
+                <span className="inline-block bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl shadow-lg">
+                  Экономия до 99.9%
+                </span>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   useDocumentTitle("QBIDS.KG - №1 Пенни-аукционы в Кыргызстане | Выиграй iPhone за копейки");
   
@@ -90,151 +282,9 @@ export default function Home() {
     <div className="bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-purple-800 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }} />
-        </div>
-        
-        {/* Floating Animation Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-4 h-4 bg-yellow-400 rounded-full opacity-60 animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-2 h-2 bg-white rounded-full opacity-40 animate-bounce"></div>
-          <div className="absolute bottom-32 left-20 w-3 h-3 bg-yellow-300 rounded-full opacity-50 animate-pulse"></div>
-          <div className="absolute top-32 right-40 w-2 h-2 bg-white rounded-full opacity-30 animate-bounce"></div>
-        </div>
+      {/* Samsung Galaxy Z Fold 7 Hero Section */}
+      <SamsungHeroCountdown formatCurrency={formatCurrency} auctionsData={auctionsData} />
 
-        <div className="max-w-[1504px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 relative">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[400px] sm:min-h-[500px]">
-            
-            {/* Left Section - Main Content */}
-            <div className="text-white space-y-8 z-10">
-              <div className="space-y-6">
-                {/* Main Headline */}
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-yellow-400">
-                  {t("heroMainTitle")}
-                </h1>
-
-                {/* Sub-headline */}
-                <p className="text-lg sm:text-xl lg:text-2xl text-blue-100 leading-relaxed">
-                  {t("heroDescription")} <span className="text-yellow-400 font-bold">{t("heroDiscountPercent")}</span>
-                </p>
-
-                {/* Key Benefits */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-yellow-400 bg-opacity-20 rounded-full flex items-center justify-center">
-                      <i className="fas fa-coins text-yellow-400"></i>
-                    </div>
-                    <div>
-                      <div className="font-semibold">{t("heroBidCost").replace("{currency}", formatCurrency(0.01))}</div>
-                      <div className="text-blue-200 text-xs">{t("heroBidCostDesc")}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-yellow-400 bg-opacity-20 rounded-full flex items-center justify-center">
-                      <i className="fas fa-bolt text-yellow-400"></i>
-                    </div>
-                    <div>
-                      <div className="font-semibold">{t("heroRealTime")}</div>
-                      <div className="text-blue-200 text-xs">{t("heroRealTimeDesc")}</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Live Stats */}
-                <div className="flex items-center space-x-6 bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 border border-white border-opacity-20">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-yellow-400">{auctionsData?.live?.length || 0}</div>
-                    <div className="text-xs text-blue-200 uppercase tracking-wide">{t("heroLiveAuctions")}</div>
-                  </div>
-                  <div className="w-px h-8 bg-white bg-opacity-30"></div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-yellow-400">{auctionsData?.upcoming?.length || 0}</div>
-                    <div className="text-xs text-blue-200 uppercase tracking-wide">{t("heroUpcomingAuctions")}</div>
-                  </div>
-                  <div className="w-px h-8 bg-white bg-opacity-30"></div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-yellow-400">{auctionsData?.finished?.length || 0}</div>
-                    <div className="text-xs text-blue-200 uppercase tracking-wide">{t("heroFinishedToday")}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Call to Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Link href="/auctions">
-                  <Button className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold px-8 py-4 rounded-xl text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-                    <i className="fas fa-gavel mr-2"></i>
-                    {t("heroViewAuctions")}
-                  </Button>
-                </Link>
-                <Link href="/how-it-works">
-                  <Button variant="outline" className="w-full sm:w-auto border-2 border-white bg-white bg-opacity-10 text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-4 rounded-xl text-lg transition-all duration-300 hover:shadow-lg backdrop-blur-sm">
-                    <i className="fas fa-question-circle mr-2"></i>
-                    {t("heroHowItWorks")}
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Right Section - Visual Element */}
-            <div className="relative z-10">
-              <div className="relative">
-                {/* Main Product Showcase */}
-                <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-8 border border-white border-opacity-20 shadow-2xl">
-                  <div className="text-center space-y-6">
-                    {/* Product Image */}
-                    <div className="w-48 h-48 mx-auto rounded-2xl flex items-center justify-center shadow-xl overflow-hidden">
-                      <img 
-                        src="https://molla.al/wp-content/uploads/2023/09/1.png" 
-                        alt="iPhone 16 Pro Max" 
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-
-                    {/* Price Comparison */}
-                    <div className="space-y-3">
-                      <div className="text-white">
-                        <div className="text-lg font-semibold mb-2">{t("heroSavingsExample")}</div>
-                        <div className="flex justify-between items-center bg-white bg-opacity-20 rounded-lg p-3">
-                          <span className="text-sm text-blue-100">{t("heroRetailPrice")}</span>
-                          <span className="text-red-400 line-through font-bold">{formatCurrency(120000)}</span>
-                        </div>
-                        <div className="flex justify-between items-center bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg p-3 mt-2">
-                          <span className="text-sm text-white font-semibold">{t("heroWinnerPrice")}</span>
-                          <span className="text-white font-bold text-xl">{formatCurrency(3.47)}</span>
-                        </div>
-                        <div className="text-center text-yellow-400 font-bold text-sm mt-2">
-                          {t("heroSavings")}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Urgency Element */}
-                    <div className="bg-yellow-400 bg-opacity-20 rounded-xl p-4 border border-yellow-400 border-opacity-30">
-                      <div className="flex items-center justify-center space-x-2">
-                        <i className="fas fa-fire text-yellow-400 animate-pulse"></i>
-                        <span className="text-white font-semibold text-sm">{t("heroHotAuctions")}</span>
-                        <i className="fas fa-fire text-yellow-400 animate-pulse"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Badge */}
-                <div className="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-bounce">
-                  <i className="fas fa-star mr-1"></i>
-                  {t("heroNumberOneKR")}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       
       <main className="max-w-[1504px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -420,6 +470,7 @@ export default function Home() {
                         auction={auction}
                         startsIn={calculateTimeToStart(auction.startTime)}
                         prebidsCount={auction.prebidsCount || 0}
+
                       />
                     ))}
                   </div>

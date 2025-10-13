@@ -1,0 +1,191 @@
+  dist/index.js  97.1kb
+⚡ Done in 9ms
+==> Uploading build...
+==> Uploaded in 5.6s. Compression took 3.5s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+Creating session middleware with config: {
+  nodeEnv: 'production',
+  cookieSecure: undefined,
+  hasSessionSecret: false,
+  hasDatabaseUrl: true
+}
+7:06:09 PM [express] serving on port 10000
+7:06:11 PM [express] Starting auction services...
+Error restarting live auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.restartLiveAuctions (file:///opt/render/project/src/dist/index.js:1136:30)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2235:9)
+The server is still running, but auction services may need manual restart
+Database ready, starting periodic updates
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1126:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2061:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:408:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2048:28)
+Error checking upcoming auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

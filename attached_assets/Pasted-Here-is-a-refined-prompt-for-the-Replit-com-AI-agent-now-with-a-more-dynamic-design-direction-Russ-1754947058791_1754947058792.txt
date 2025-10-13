@@ -1,0 +1,32 @@
+Here is a refined prompt for the Replit.com AI agent, now with a more dynamic design direction, Russian text, and a focus on an aspirational "winner" aesthetic.
+
+Replit.com AI Agent Prompt - "Coming Soon" Hero Section (Refined)
+"Create a premium, high-tech hero section for a penny auction website. The goal is to build intense anticipation for an upcoming auction of the Samsung Galaxy Z Fold 7. The design should evoke the feeling of a 'winner'—sleek, celebratory, and exclusive. The auction is set to start in 48 hours.
+
+Design & Aesthetics:
+
+Color Palette: Do not use blue. Instead, adopt a sophisticated and impactful color scheme. Use a deep, dark background, like an inky black or a dark slate gray. The accent colors should be a combination of subtle gold, vibrant magenta, or electric purple to suggest luxury and victory.
+
+Visuals: The primary visual should be a stunning, high-resolution 3D render or a short, looping animation of the Samsung Galaxy Z Fold 7. The animation should not be distracting; it should be subtle and premium. Imagine the phone slowly rotating, unfolding, or having a soft glow behind it. This visual should be the centerpiece, making the product look like a trophy.
+
+Animations: Implement subtle, tasteful animations. The countdown timer's digits should have a smooth, glowing effect as they tick down. When the user hovers over the CTA button, it should have a luxurious, expanding gradient or a clean fade effect. The overall feel should be dynamic and modern, not static.
+
+Content & Text (in Russian):
+
+Headline: Аукцион начинается. (The Auction Begins.) The text should be large, bold, and command attention.
+
+Sub-headline: Станьте обладателем Samsung Galaxy Z Fold 7. (Become the owner of the Samsung Galaxy Z Fold 7.) This should be slightly smaller, reinforcing the aspirational goal.
+
+Countdown Timer: The timer is the central piece of information. The labels should be translated and formatted cleanly:
+
+Дней (Days)
+
+Часов (Hours)
+
+Минут (Minutes)
+
+Секунд (Seconds)
+
+Call-to-Action (CTA): The button text must be a clear and compelling action.
+
+Уведомить меня (Notify me) - This is to capture user emails. The button should stand out with the accent color.

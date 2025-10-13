@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { Server as SocketIOServer } from "socket.io";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { createSessionMiddleware } from "./session";
 import { storage } from "./storage";
 import { auctionService } from "./services/auction-service";
@@ -77,6 +78,310 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set the io instance for other services to use
   setSocketIO(io);
 
+  // Health check endpoint for Render.com monitoring
+  app.get("/health", async (_req, res) => {
+    try {
+      // Quick database check
+      await storage.getSettings();
+      res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+    } catch (error) {
+      console.error("Health check failed:", error);
+      res.status(503).json({ status: "error", message: "Service unavailable" });
+    }
+  });
+
+  // Create payment session before redirecting to Digiseller
+  app.post("/api/payment/create-session", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Не авторизован" });
+    }
+
+    try {
+      const { packageId, bidsAmount, amount } = z.object({
+        packageId: z.number(),
+        bidsAmount: z.number(),
+        amount: z.number()
+      }).parse(req.body);
+
+      // Map package IDs to Digiseller product IDs
+      const productIdMap: { [key: number]: string } = {
+        1: "5276665",
+        2: "5484776",
+        3: "5355203",
+        4: "5355213",
+        5: "5355214"
+      };
+
+      const digisellerProductId = productIdMap[packageId];
+      if (!digisellerProductId) {
+        return res.status(400).json({ error: "Invalid package ID" });
+      }
+
+      // Get user
+      const user = await storage.getUser(req.session.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      // Create pending transaction
+      const transaction = await storage.createTransaction({
+        userId: user.id,
+        userEmail: user.email || undefined,
+        digisellerProductId: digisellerProductId,
+        amount: amount.toString(),
+        currency: "KGS",
+        bidsAmount: bidsAmount,
+        status: "pending"
+      });
+
+      res.json({ 
+        transactionId: transaction.id,
+        status: "pending"
+      });
+    } catch (error) {
+      console.error("Create payment session error:", error);
+      res.status(500).json({ error: "Failed to create payment session" });
+    }
+  });
+
+  // Digiseller Payment Webhook
+  // This endpoint receives payment notifications from Digiseller
+  app.post("/api/payment/digiseller/webhook", async (req, res) => {
+    try {
+      console.log("Digiseller webhook received:", req.body);
+      
+      // Handle actual Digiseller webhook format
+      const {
+        ID_I: inv_id,        // Order number (Invoice ID)
+        ID_D: product_id,    // Product identifier
+        Amount: amount,      // Order amount
+        Currency: currency,  // Currency
+        Email: email,        // Buyer email
+        Date: date,          // Purchase date
+        SHA256: signature,   // SHA256 hash for verification
+        Through: through,    // Base64 encoded additional parameters
+        IP: ip,              // Buyer IP
+        Agent: agent,        // Agent identifier
+        CartUID: cartUID,    // Cart ID
+        IsMyProduct: isMyProduct, // Your/someone else's product flag
+        Referer: referer     // HTTP referer (optional)
+      } = req.body;
+
+      // Also support legacy format for backward compatibility
+      const legacyInvId = req.body.inv_id || inv_id;
+      const legacyProductId = req.body.product_id || product_id;
+      const legacyAmount = req.body.amount || amount;
+      const legacyEmail = req.body.email || email;
+      const legacySignature = req.body.sign || signature;
+
+      // Use the format that was provided
+      const finalInvId = legacyInvId;
+      const finalProductId = legacyProductId;
+      const finalAmount = legacyAmount;
+      const finalEmail = legacyEmail;
+      const finalSignature = legacySignature;
+
+      console.log("Processed webhook data:", {
+        inv_id: finalInvId,
+        product_id: finalProductId,
+        amount: finalAmount,
+        email: finalEmail,
+        currency: currency,
+        date: date,
+        ip: ip
+      });
+
+      // Verify SHA256 signature if provided and secret key is set
+      const secretKey = process.env.DIGISELLER_SECRET_KEY || "";
+      
+      // Skip signature verification for widget callbacks
+      const isWidgetCallback = finalSignature && (
+        finalSignature.startsWith('widget-callback-') || 
+        finalSignature.startsWith('success-page-')
+      );
+      
+      if (secretKey && finalSignature && !isWidgetCallback) {
+        // SHA256 hash format: password(lowercased);order_number;product_id
+        const dataToSign = `${secretKey.toLowerCase()};${finalInvId};${finalProductId}`;
+        const calculatedSign = crypto.createHash('sha256').update(dataToSign).digest('hex');
+        
+        console.log("Signature verification:", {
+          received: finalSignature,
+          calculated: calculatedSign,
+          dataToSign: dataToSign
+        });
+        
+        if (finalSignature !== calculatedSign) {
+          console.error("Invalid SHA256 signature:", { 
+            received: finalSignature, 
+            calculated: calculatedSign,
+            dataToSign: dataToSign
+          });
+          return res.status(403).json({ error: "Invalid signature" });
+        }
+        console.log("✅ Signature verified successfully");
+      }
+
+      // Check if transaction already processed
+      const existingTransaction = await storage.getTransactionByInvoiceId(finalInvId);
+      if (existingTransaction && existingTransaction.status === "completed") {
+        console.log("Transaction already processed:", finalInvId);
+        return res.status(200).json({ status: "ok", message: "Already processed" });
+      }
+
+      // Map product IDs to bid packages
+      const bidPackages: { [key: string]: { bids: number; price: number } } = {
+        "5276665": { bids: 50, price: 750 },
+        "5484776": { bids: 100, price: 1500 },
+        "5355203": { bids: 250, price: 3750 },
+        "5355213": { bids: 500, price: 7500 },
+        "5355214": { bids: 1000, price: 15000 }
+      };
+
+      const packageInfo = bidPackages[finalProductId];
+      if (!packageInfo) {
+        console.error("Unknown product ID:", finalProductId);
+        return res.status(400).json({ error: "Unknown product ID: " + finalProductId });
+      }
+
+      console.log("✅ Product found:", packageInfo, "for product ID:", finalProductId);
+
+      // Find pending transaction by email and product ID
+      let transaction = existingTransaction;
+      
+      if (!transaction && finalEmail) {
+        // Try to find pending transaction by email and product
+        const user = await storage.getUserByEmail(finalEmail);
+        if (user) {
+          console.log("✅ User found by email:", user.username);
+          const userTransactions = await storage.getUserTransactions(user.id, 10);
+          transaction = userTransactions.find(t => 
+            t.status === "pending" && 
+            t.digisellerProductId === finalProductId &&
+            !t.digisellerInvoiceId
+          );
+          
+          if (transaction) {
+            console.log("✅ Found matching pending transaction:", transaction.id);
+          }
+        } else {
+          console.log("❌ No user found with email:", finalEmail);
+        }
+      }
+
+      if (!transaction) {
+        console.log("Creating new transaction for email:", finalEmail);
+        
+        // Try to find user by email
+        if (finalEmail) {
+          const user = await storage.getUserByEmail(finalEmail);
+          if (user) {
+            // Create new transaction
+            transaction = await storage.createTransaction({
+              userId: user.id,
+              userEmail: finalEmail,
+              digisellerInvoiceId: finalInvId,
+              digisellerProductId: finalProductId,
+              amount: finalAmount.toString(),
+              currency: currency || "KGS",
+              bidsAmount: packageInfo.bids,
+              status: "completed",
+              paymentMethod: agent || "digiseller",
+              metadata: req.body
+            });
+
+            // Add bids to user balance
+            await storage.addBidsToUser(user.id, packageInfo.bids);
+            
+            console.log(`✅ Successfully processed payment: ${finalInvId}, added ${packageInfo.bids} bids to user ${user.id}`);
+            return res.status(200).json({ status: "ok" });
+          }
+        }
+        
+        console.error("❌ Could not match payment to user:", { email: finalEmail, product_id: finalProductId });
+        return res.status(400).json({ error: "Could not match payment to user" });
+      }
+
+      // Update existing transaction
+      await storage.updateTransaction(transaction.id, {
+        digisellerInvoiceId: finalInvId,
+        status: "completed",
+        paymentMethod: agent || "digiseller",
+        metadata: req.body
+      });
+
+      // Add bids to user balance
+      await storage.addBidsToUser(transaction.userId, packageInfo.bids);
+      
+      console.log(`✅ Successfully processed payment: ${finalInvId}, added ${packageInfo.bids} bids to user ${transaction.userId}`);
+
+      res.status(200).json({ status: "ok" });
+    } catch (error) {
+      console.error("❌ Webhook processing error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Success redirect page (user redirected here after successful payment)
+  app.get("/payment/success", (req, res) => {
+    res.redirect("/#/payment-success");
+  });
+
+  // Cancel redirect page (user redirected here after canceling payment)
+  app.get("/payment/cancel", (req, res) => {
+    res.redirect("/#/payment-cancel");
+  });
+
+  // Manual balance refresh endpoint (for testing/support)
+  app.post("/api/payment/refresh-balance", async (req, res) => {
+    if (!req.session.userId) {
+      return res.status(401).json({ error: "Не авторизован" });
+    }
+
+    try {
+      const { transactionId } = req.body;
+      
+      if (!transactionId) {
+        return res.status(400).json({ error: "Transaction ID required" });
+      }
+
+      // Get the transaction
+      const transaction = await storage.getTransaction(transactionId);
+      
+      if (!transaction) {
+        return res.status(404).json({ error: "Transaction not found" });
+      }
+
+      if (transaction.userId !== req.session.userId) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      if (transaction.status === "completed") {
+        return res.json({ message: "Transaction already completed", status: "completed" });
+      }
+
+      // Complete the transaction
+      await storage.updateTransaction(transaction.id, {
+        status: "completed",
+        digisellerInvoiceId: 'manual-refresh-' + Date.now()
+      });
+
+      // Add bids to user
+      await storage.addBidsToUser(transaction.userId, transaction.bidsAmount);
+
+      console.log(`Manual balance refresh: added ${transaction.bidsAmount} bids to user ${transaction.userId}`);
+
+      res.json({ 
+        message: "Balance updated successfully", 
+        bidsAdded: transaction.bidsAmount,
+        status: "completed" 
+      });
+    } catch (error) {
+      console.error("Manual balance refresh error:", error);
+      res.status(500).json({ error: "Failed to refresh balance" });
+    }
+  });
+
   // Authentication routes
   // Live validation endpoints
   app.post("/api/auth/validate-username", async (req, res) => {
@@ -146,10 +451,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastName: z.string().optional(),
         username: z.string().min(3, "Имя пользователя должно содержать минимум 3 символа"),
         email: z.string().email("Неверный формат email"),
-        phone: z.string().regex(/^\+996\d{9}$/, "Номер должен быть в формате +996XXXXXXXXX"),
+        phone: z.string().regex(/^\+996\d{9}$/, "Номер должен быть в формате +996XXXXXXXXX").optional(),
         password: z.string().min(6, "Пароль должен содержать минимум 6 символов"),
-        dateOfBirth: z.string().min(1, "Дата рождения обязательна"),
-        gender: z.enum(["male", "female", "other"], { required_error: "Пол обязателен" }),
+        dateOfBirth: z.string().optional(),
+        gender: z.enum(["male", "female", "other"]).optional(),
       }).parse(req.body);
       
       // Check for existing users
@@ -163,22 +468,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Email уже зарегистрирован" });
       }
 
-      const existingPhone = await storage.getUserByPhone(registerData.phone);
-      if (existingPhone) {
-        return res.status(400).json({ error: "Номер телефона уже зарегистрирован" });
+      // Check phone if provided
+      if (registerData.phone) {
+        const existingPhone = await storage.getUserByPhone(registerData.phone);
+        if (existingPhone) {
+          return res.status(400).json({ error: "Номер телефона уже зарегистрирован" });
+        }
       }
 
-      // Validate age
-      const birthDate = new Date(registerData.dateOfBirth);
-      const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
-      const monthDiff = today.getMonth() - birthDate.getMonth();
-      const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) 
-        ? age - 1 
-        : age;
-      
-      if (actualAge < 18) {
-        return res.status(400).json({ error: "Вам должно быть минимум 18 лет для регистрации" });
+      // Validate age if date of birth is provided
+      if (registerData.dateOfBirth) {
+        const birthDate = new Date(registerData.dateOfBirth);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) 
+          ? age - 1 
+          : age;
+        
+        if (actualAge < 18) {
+          return res.status(400).json({ error: "Вам должно быть минимум 18 лет для регистрации" });
+        }
       }
 
       const hashedPassword = await bcrypt.hash(registerData.password, 10);
@@ -190,7 +500,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: registerData.email,
         phone: registerData.phone,
         password: hashedPassword,
-        dateOfBirth: new Date(registerData.dateOfBirth),
+        dateOfBirth: registerData.dateOfBirth ? new Date(registerData.dateOfBirth) : undefined,
         gender: registerData.gender,
         bidBalance: 5, // Starting bid balance
         role: "user",
@@ -1043,8 +1353,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Delay periodic updates to allow database connections to stabilize
+  // This is critical for Render.com where DB connections take time to establish
+  let dbReady = false;
+  
+  setTimeout(() => {
+    dbReady = true;
+    console.log("Database ready, starting periodic updates");
+  }, 3000); // Wait 3 seconds for DB connections to stabilize
+
   // Periodic updates for timers and auction status
   setInterval(async () => {
+    // Skip if database isn't ready yet
+    if (!dbReady) {
+      return;
+    }
+
     const timers = timerService.getAllTimers();
     io.emit("timerUpdate", timers);
 
@@ -1061,10 +1385,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error("Error in periodic auction updates:", error);
+      // Don't crash the app, just log the error
     }
 
     // Check for auctions that should start
-    await auctionService.checkUpcomingAuctions();
+    try {
+      await auctionService.checkUpcomingAuctions();
+    } catch (error) {
+      console.error("Error checking upcoming auctions:", error);
+      // Don't crash the app, just log the error
+    }
   }, 1000);
 
   return httpServer;

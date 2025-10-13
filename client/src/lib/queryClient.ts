@@ -1,21 +1,28 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+async function extractErrorMessage(res: Response): Promise<string> {
+  // Use clones so we don't disturb the original body stream
+  try {
+    const data = await res.clone().json();
+    // Prefer structured error field if present
+    if (data && typeof data === "object" && (data as any).error) {
+      return (data as any).error || res.statusText;
+    }
+    return JSON.stringify(data);
+  } catch {
+    try {
+      const text = await res.clone().text();
+      return text || res.statusText;
+    } catch {
+      return res.statusText;
+    }
+  }
+}
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    // Clone the response to avoid "body stream already read" error
-    const clonedRes = res.clone();
-    try {
-      const errorData = await res.json();
-      throw new Error(errorData.error || res.statusText);
-    } catch (jsonError) {
-      // If response is not JSON, fall back to text using the cloned response
-      try {
-        const text = await clonedRes.text() || res.statusText;
-        throw new Error(text);
-      } catch (textError) {
-        throw new Error(res.statusText);
-      }
-    }
+    const message = await extractErrorMessage(res);
+    throw new Error(message);
   }
 }
 

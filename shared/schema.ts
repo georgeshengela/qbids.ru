@@ -5,8 +5,8 @@ import { z } from "zod";
 
 export const userRoleEnum = pgEnum("user_role", ["user", "admin"]);
 export const auctionStatusEnum = pgEnum("auction_status", ["upcoming", "live", "finished"]);
-
 export const genderEnum = pgEnum("gender", ["male", "female", "other"]);
+export const transactionStatusEnum = pgEnum("transaction_status", ["pending", "completed", "failed", "cancelled"]);
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -103,6 +103,24 @@ export const settings = pgTable("settings", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Transactions table for payment logging
+export const transactions = pgTable("transactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  userEmail: text("user_email"), // Store email to match with Digiseller payment
+  digisellerInvoiceId: text("digiseller_invoice_id"),
+  digisellerProductId: text("digiseller_product_id"),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  currency: text("currency").notNull().default("KGS"),
+  bidsAmount: integer("bids_amount").notNull(), // Number of bids purchased
+  status: transactionStatusEnum("status").notNull().default("pending"),
+  paymentMethod: text("payment_method"),
+  errorMessage: text("error_message"),
+  metadata: jsonb("metadata"), // Store additional payment data
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Session storage table for express-session
 export const sessions = pgTable(
   "sessions",
@@ -172,6 +190,13 @@ export const prebidsRelations = relations(prebids, ({ one }) => ({
   }),
 }));
 
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  user: one(users, {
+    fields: [transactions.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -216,6 +241,12 @@ export const insertAuctionBotSchema = createInsertSchema(auctionBots).omit({
   createdAt: true,
 });
 
+export const insertTransactionSchema = createInsertSchema(transactions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -233,3 +264,5 @@ export type BotSettings = typeof botSettings.$inferSelect;
 export type InsertBotSettings = z.infer<typeof insertBotSettingsSchema>;
 export type Settings = typeof settings.$inferSelect;
 export type InsertSettings = z.infer<typeof insertSettingsSchema>;
+export type Transaction = typeof transactions.$inferSelect;
+export type InsertTransaction = z.infer<typeof insertTransactionSchema>;

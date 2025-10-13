@@ -1,0 +1,58 @@
+⚡ Done in 10ms
+==> Uploading build...
+==> Uploaded in 6.8s. Compression took 3.8s
+==> Build successful 🎉
+==> Deploying...
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+Creating session middleware with config: {
+  nodeEnv: 'production',
+  cookieSecure: undefined,
+  hasSessionSecret: false,
+  hasDatabaseUrl: true
+}
+6:58:07 PM [express] serving on port 10000
+Error restarting live auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:401:16)
+    at async AuctionService.restartLiveAuctions (file:///opt/render/project/src/dist/index.js:1129:30)
+    at async Server.<anonymous> (file:///opt/render/project/src/dist/index.js:2214:7)
+Error in periodic auction updates: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:401:16)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2033:28)
+/opt/render/project/src/node_modules/pg-pool/index.js:45
+    Error.captureStackTrace(err)
+          ^
+Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:401:16)
+    at async AuctionService.checkUpcomingAuctions (file:///opt/render/project/src/dist/index.js:1119:34)
+    at async Timeout._onTimeout (file:///opt/render/project/src/dist/index.js:2045:5)
+Node.js v22.16.0
+==> Exited with status 1
+==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
+==> Running 'npm run start'
+> rest-express@1.0.0 start
+> NODE_ENV=production node dist/index.js
+Creating session middleware with config: {
+  nodeEnv: 'production',
+  cookieSecure: undefined,
+  hasSessionSecret: false,
+  hasDatabaseUrl: true
+}
+6:58:15 PM [express] serving on port 10000
+Error restarting live auctions: Error: Connection terminated unexpectedly
+    at /opt/render/project/src/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///opt/render/project/src/node_modules/drizzle-orm/node-postgres/session.js:83:22
+    at async DatabaseStorage.getAuctionsByStatus (file:///opt/render/project/src/dist/index.js:401:16)
+    at async AuctionService.restartLiveAuctions (file:///opt/render/project/src/dist/index.js:1129:30)
+    at async Server.<anonymous> (file:///opt/render/project/src/dist/index.js:2214:7)

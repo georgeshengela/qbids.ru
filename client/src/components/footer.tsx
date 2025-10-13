@@ -61,9 +61,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/winners" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center">
-                  <i className="fas fa-trophy mr-2 text-yellow-400"></i>
-                  {t("winners")}
+                <Link href="/topup" className="text-gray-300 hover:text-white transition-colors text-sm flex items-center">
+                  <i className="fas fa-credit-card mr-2 text-yellow-400"></i>
+                  {t("topUpBalance")}
                 </Link>
               </li>
             </ul>

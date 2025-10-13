@@ -8,6 +8,7 @@ import { AuthModal } from "@/components/auth-modal";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useSocket } from "@/hooks/use-socket";
 
 export function Header() {
@@ -95,49 +96,66 @@ export function Header() {
             </nav>
 
             {/* Desktop User Section */}
-            <div className="hidden lg:flex items-center space-x-3">
+            <div className="hidden lg:flex items-center space-x-4">
               {isAuthenticated && user ? (
                 <>
-                  <Link href="/profile">
-                    <div className="bg-slate-50 hover:bg-slate-100 px-4 py-2.5 rounded-xl transition-all duration-200 cursor-pointer border border-slate-200 hover:border-slate-300">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                          <i className="fas fa-user text-white text-xs"></i>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-semibold text-slate-900">{user.username}</p>
-                          <p className="text-xs text-slate-600 flex items-center justify-end">
-                            <i className="fas fa-coins mr-1 text-blue-500"></i>
-                            {user.bidBalance} {t("bids")}
-                          </p>
-                        </div>
+                  {/* Balance and Top Up */}
+                  <div className="flex items-center space-x-3">
+                    <div className="bg-green-50 border border-green-200 px-4 py-2 rounded-xl">
+                      <div className="flex items-center space-x-2 text-sm">
+                        <i className="fas fa-coins text-green-600"></i>
+                        <span className="font-semibold text-green-700">{user.bidBalance} {t("bids")}</span>
                       </div>
                     </div>
-                  </Link>
-                  
-                  <div className="flex items-center space-x-2">
-                    {user?.role === 'admin' && (
-                      <Link href="/admin">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 rounded-xl h-12 px-4"
-                        >
-                          <i className="fas fa-cog mr-2 text-xs"></i>
-                          {t("adminPanel")}
-                        </Button>
-                      </Link>
-                    )}
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={handleLogout}
-                      className="border-slate-200 text-slate-700 hover:bg-red-50 hover:border-red-200 hover:text-red-600 rounded-xl h-12 px-4"
-                    >
-                      <i className="fas fa-sign-out-alt mr-2 text-xs"></i>
-                      {t("logout")}
-                    </Button>
+                    <Link href="/topup">
+                      <Button 
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white h-9 px-4 rounded-lg font-medium"
+                      >
+                        <i className="fas fa-plus mr-2 text-xs"></i>
+                        {t("topUpBalance")}
+                      </Button>
+                    </Link>
                   </div>
+
+                  {/* Username with Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-300 rounded-xl h-11 px-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <i className="fas fa-user text-white text-xs"></i>
+                          </div>
+                          <span className="font-semibold text-slate-900">{user.username}</span>
+                          <i className="fas fa-chevron-down text-slate-400 text-xs"></i>
+                        </div>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile" className="flex items-center cursor-pointer">
+                          <i className="fas fa-user mr-2 text-slate-500"></i>
+                          {t("profile")}
+                        </Link>
+                      </DropdownMenuItem>
+                      {user?.role === 'admin' && (
+                        <DropdownMenuItem asChild>
+                          <Link href="/admin" className="flex items-center cursor-pointer">
+                            <i className="fas fa-cog mr-2 text-slate-500"></i>
+                            {t("adminPanel")}
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={handleLogout}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                      >
+                        <i className="fas fa-sign-out-alt mr-2"></i>
+                        {t("logout")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               ) : (
                 <Button 
@@ -266,6 +284,22 @@ export function Header() {
                         </Link>
                       ))}
                     </nav>
+
+                    {/* Top Up Link for authenticated users */}
+                    {isAuthenticated && (
+                      <>
+                        <Separator className="my-4" />
+                        <div className="space-y-2">
+                          <Link href="/topup" onClick={handleNavClick}>
+                            <div className="flex items-center space-x-3 p-3 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 hover:border-green-300 transition-all duration-200">
+                              <i className="fas fa-plus w-5 text-sm"></i>
+                              <span className="font-medium">{t("topUpBalance")}</span>
+                              <i className="fas fa-chevron-right ml-auto text-green-600"></i>
+                            </div>
+                          </Link>
+                        </div>
+                      </>
+                    )}
 
                     {isAuthenticated && user?.role === 'admin' && (
                       <>

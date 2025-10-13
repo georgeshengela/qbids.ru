@@ -21,6 +21,7 @@ export default function Login() {
 
   const [registerForm, setRegisterForm] = useState({
     username: "",
+    email: "",
     password: "",
     confirmPassword: "",
   });
@@ -74,6 +75,7 @@ export default function Login() {
     try {
       await register({
         username: registerForm.username,
+        email: registerForm.email,
         password: registerForm.password,
       });
       toast({
@@ -160,6 +162,18 @@ export default function Login() {
                       placeholder="Выберите имя пользователя"
                       required
                       minLength={3}
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="register-email">Email</Label>
+                    <Input
+                      id="register-email"
+                      type="email"
+                      value={registerForm.email}
+                      onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })}
+                      placeholder="Введите email адрес"
+                      required
                     />
                   </div>
 

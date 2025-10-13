@@ -1,10 +1,11 @@
 import { hasConsentedToAnalytics } from './cookie-utils';
 
-// Define the gtag function globally
+// Define global tracking functions
 declare global {
   interface Window {
     dataLayer: any[];
     gtag: (...args: any[]) => void;
+    fbq: (...args: any[]) => void;
   }
 }
 
@@ -59,11 +60,63 @@ export const trackEvent = (
   label?: string, 
   value?: number
 ) => {
-  if (typeof window === 'undefined' || !window.gtag || !hasConsentedToAnalytics()) return;
+  if (typeof window === 'undefined' || !hasConsentedToAnalytics()) return;
   
-  window.gtag('event', action, {
-    event_category: category,
-    event_label: label,
-    value: value,
+  // Track with Google Analytics
+  if (window.gtag) {
+    window.gtag('event', action, {
+      event_category: category,
+      event_label: label,
+      value: value,
+    });
+  }
+  
+  // Track with Facebook Pixel
+  if (window.fbq) {
+    window.fbq('track', action, {
+      event_category: category,
+      event_label: label,
+      value: value,
+    });
+  }
+};
+
+// Facebook Pixel specific tracking functions
+export const trackFacebookEvent = (eventName: string, parameters?: any) => {
+  if (typeof window === 'undefined' || !window.fbq || !hasConsentedToAnalytics()) return;
+  
+  if (parameters) {
+    window.fbq('track', eventName, parameters);
+  } else {
+    window.fbq('track', eventName);
+  }
+};
+
+// Common Facebook Pixel events for auction platform
+export const trackRegistration = () => {
+  trackFacebookEvent('CompleteRegistration');
+  trackEvent('sign_up', 'engagement', 'user_registration');
+};
+
+export const trackBidPlaced = (value?: number, auctionId?: string) => {
+  trackFacebookEvent('Purchase', { 
+    value: value || 1, 
+    currency: 'KGS',
+    content_ids: auctionId ? [auctionId] : undefined
   });
+  trackEvent('bid_placed', 'auction', 'bid_action', value);
+};
+
+export const trackAuctionView = (auctionId: string, auctionTitle?: string) => {
+  trackFacebookEvent('ViewContent', {
+    content_ids: [auctionId],
+    content_name: auctionTitle,
+    content_type: 'auction'
+  });
+  trackEvent('view_auction', 'auction', auctionTitle);
+};
+
+export const trackTopUp = (value: number) => {
+  trackFacebookEvent('AddPaymentInfo', { value, currency: 'KGS' });
+  trackEvent('add_payment_info', 'monetization', 'top_up', value);
 };

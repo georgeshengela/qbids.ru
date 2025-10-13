@@ -13,6 +13,98 @@ import { apiRequest } from "@/lib/queryClient";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import type { Auction, Bid } from "@/types/auction";
+import { trackAuctionView, trackBidPlaced } from "@/lib/analytics";
+
+// Fake Visitors Badge Component for Samsung Galaxy Z Fold 7 QB/1113
+function FakeVisitorsBadge({ auction }: { auction: Auction }) {
+  const [visitorCount, setVisitorCount] = useState(0);
+  const [recentJoiners, setRecentJoiners] = useState<string[]>([]);
+
+  // Only show for Samsung Galaxy Z Fold 7 auction
+  const isSamsungAuction = auction.title.toLowerCase().includes('samsung galaxy z fold 7') || 
+                          auction.title.toLowerCase().includes('qb/1113');
+
+  useEffect(() => {
+    if (!isSamsungAuction) return;
+
+    // Generate realistic visitor count based on time of day
+    const generateVisitorCount = () => {
+      const hour = new Date().getHours();
+      let baseCount = 45;
+      
+      // Peak hours (9-12, 18-22) have more visitors
+      if ((hour >= 9 && hour <= 12) || (hour >= 18 && hour <= 22)) {
+        baseCount = 85;
+      }
+      
+      // Add some randomness (±15)
+      return baseCount + Math.floor(Math.random() * 31) - 15;
+    };
+
+    // List of fake usernames for recent joiners
+    const fakeNames = [
+      'Алексей К.', 'Мария В.', 'Дмитрий С.', 'Анна П.', 'Сергей Т.',
+      'Елена М.', 'Андрей Л.', 'Ольга Н.', 'Владимир Р.', 'Ирина Ф.',
+      'Михаил Г.', 'Светлана Б.', 'Николай З.', 'Татьяна Ш.', 'Игорь К.',
+      'Наталья Ж.', 'Роман А.', 'Юлия Д.', 'Павел И.', 'Валентина Ц.'
+    ];
+
+    // Initialize visitor count
+    setVisitorCount(generateVisitorCount());
+
+    // Update visitor count every 15-30 seconds
+    const visitorInterval = setInterval(() => {
+      setVisitorCount(prev => {
+        const change = Math.floor(Math.random() * 7) - 3; // ±3 visitors
+        return Math.max(25, Math.min(150, prev + change));
+      });
+    }, 15000 + Math.random() * 15000);
+
+    // Add new recent joiners every 8-25 seconds
+    const joinersInterval = setInterval(() => {
+      const randomName = fakeNames[Math.floor(Math.random() * fakeNames.length)];
+      setRecentJoiners(prev => {
+        const newJoiners = [randomName, ...prev.filter(name => name !== randomName)];
+        return newJoiners.slice(0, 3); // Keep only last 3 joiners
+      });
+    }, 8000 + Math.random() * 17000);
+
+    return () => {
+      clearInterval(visitorInterval);
+      clearInterval(joinersInterval);
+    };
+  }, [isSamsungAuction]);
+
+  if (!isSamsungAuction || visitorCount === 0) return null;
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-sm font-semibold text-gray-900">Активность на аукционе</span>
+        </div>
+        <div className="flex items-center space-x-1 bg-green-50 px-3 py-1 rounded-full">
+          <i className="fas fa-eye text-green-600 text-xs"></i>
+          <span className="text-sm font-bold text-green-700">{visitorCount}</span>
+          <span className="text-xs text-green-600">онлайн</span>
+        </div>
+      </div>
+      
+      {recentJoiners.length > 0 && (
+        <div className="space-y-1">
+          {recentJoiners.map((name, index) => (
+            <div key={`${name}-${index}`} className="flex items-center space-x-2 text-xs text-gray-600">
+              <div className="w-1 h-1 bg-blue-400 rounded-full"></div>
+              <span>{name} присоединился к просмотру</span>
+              <span className="text-gray-400">только что</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AuctionDetail() {
   const { slug } = useParams();
@@ -31,10 +123,18 @@ export default function AuctionDetail() {
     enabled: !!slug,
   });
 
+  // Track auction view when data is loaded
+  useEffect(() => {
+    if (auction) {
+      trackAuctionView(auction.id, auction.title);
+    }
+  }, [auction]);
+
   // Fetch bid history (limited to recent bids for display)
   const { data: bids = [] } = useQuery<Bid[]>({
     queryKey: ["/api/auctions", auction?.id, "bids"],
     enabled: !!auction?.id,
+    refetchInterval: 1000,
   });
 
   // Fetch complete auction statistics
@@ -103,6 +203,11 @@ export default function AuctionDetail() {
       await apiRequest("POST", `/api/auctions/${auction.id}/bid`);
     },
     onSuccess: () => {
+      // Track successful bid placement
+      if (auction) {
+        trackBidPlaced(auction.bidIncrement, auction.id);
+      }
+      
       toast({
         title: t("bidPlaced"),
         description: t("bidPlacedDesc"),
@@ -483,7 +588,7 @@ export default function AuctionDetail() {
                       {auction.status === "live" && (
                         <Button
                           onClick={handleBid}
-                          disabled={bidMutation.isPending || !isAuthenticated}
+                          disabled={bidMutation.isPending || !isAuthenticated || (bids[0] && !bids[0].isBot && bids[0].user?.id === user?.id)}
                           className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-4 text-sm sm:text-lg font-semibold rounded-2xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
                         >
                           {bidMutation.isPending ? (
@@ -494,7 +599,7 @@ export default function AuctionDetail() {
                           ) : (
                             <>
                               <i className="fas fa-gavel mr-2"></i>
-                              {t("placeBid")} ({t("oneBid")} = +{formatCurrency(0.01)})
+                              {`${t("placeBid")} (${t("oneBid")} = +${formatCurrency(0.01)})`}
                             </>
                           )}
                         </Button>
@@ -526,6 +631,9 @@ export default function AuctionDetail() {
 
           {/* Right Column - Bid History */}
           <div className="space-y-4 md:space-y-6">
+            {/* Fake Visitors Badge for Samsung Galaxy Z Fold 7 */}
+            <FakeVisitorsBadge auction={auction} />
+            
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center space-x-2 text-lg md:text-xl">
