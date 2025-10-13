@@ -114,8 +114,8 @@ export default function TopUp() {
 
     // Static Digiseller payment URLs
     const paymentUrls: { [key: number]: string } = {
-      1: 'https://oplata.info/asp2/pay_wm.asp?id_d=5276665&lang=ru-RU',
-      2: 'https://oplata.info/asp2/pay_wm.asp?id_d=5484776&lang=ru-RU',
+      1: 'https://oplata.info/asp2/pay_wm.asp?id_d=5484776&lang=ru-RU',
+      2: 'https://oplata.info/asp2/pay_wm.asp?id_d=5487610&lang=ru-RU',
       3: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355203&lang=ru-RU',
       4: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355213&lang=ru-RU',
       5: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355214&lang=ru-RU'

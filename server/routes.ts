@@ -103,13 +103,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         amount: z.number()
       }).parse(req.body);
 
-      // Map package IDs to Digiseller product IDs
+      // Map package IDs to Digiseller product IDs (UPDATED to match frontend URLs)
       const productIdMap: { [key: number]: string } = {
-        1: "5276665",
-        2: "5484776",
-        3: "5355203",
-        4: "5355213",
-        5: "5355214"
+        1: "5484776",  // 50 bids
+        2: "5487610",  // 100 bids (FIXED!)
+        3: "5355203",  // 250 bids
+        4: "5355213",  // 500 bids
+        5: "5355214"   // 1000 bids
       };
 
       const digisellerProductId = productIdMap[packageId];
@@ -181,10 +181,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const finalEmail = legacyEmail;
       const finalSignature = legacySignature;
 
+      // Convert product ID to string for consistent comparison (MOVED UP)
+      const productIdStr = String(finalProductId);
+      
       console.log("📨 Processed webhook data:", {
         inv_id: finalInvId,
         product_id: finalProductId,
         product_id_type: typeof finalProductId,
+        product_id_string: productIdStr,
         amount: finalAmount,
         email: finalEmail,
         currency: currency,
@@ -234,21 +238,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(200).json({ status: "ok", message: "Already processed" });
       }
 
-      // Map product IDs to bid packages
+      // Map product IDs to bid packages (UPDATED to match frontend URLs)
       const bidPackages: { [key: string]: { bids: number; price: number } } = {
-        "5276665": { bids: 50, price: 750 },
-        "5484776": { bids: 100, price: 1500 },
-        "5355203": { bids: 250, price: 3750 },
-        "5355213": { bids: 500, price: 7500 },
-        "5355214": { bids: 1000, price: 15000 }
+        "5484776": { bids: 50, price: 750 },    // Package 1 - 50 bids
+        "5487610": { bids: 100, price: 1500 },  // Package 2 - 100 bids (FIXED!)
+        "5355203": { bids: 250, price: 3750 },  // Package 3 - 250 bids 
+        "5355213": { bids: 500, price: 7500 },  // Package 4 - 500 bids
+        "5355214": { bids: 1000, price: 15000 } // Package 5 - 1000 bids
       };
 
       console.log("🗂️ Available product IDs:", Object.keys(bidPackages));
       console.log("🔍 Looking for product ID:", finalProductId, "(type:", typeof finalProductId, ")");
-      
-      // Convert product ID to string for consistent comparison
-      const productIdStr = String(finalProductId);
-      console.log("🔄 Converted product ID to string:", productIdStr);
+      console.log("🔄 Using product ID string:", productIdStr);
       
       const packageInfo = bidPackages[productIdStr];
       if (!packageInfo) {
