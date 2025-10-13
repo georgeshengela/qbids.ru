@@ -181,15 +181,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const finalEmail = legacyEmail;
       const finalSignature = legacySignature;
 
-      console.log("Processed webhook data:", {
+      console.log("📨 Processed webhook data:", {
         inv_id: finalInvId,
         product_id: finalProductId,
+        product_id_type: typeof finalProductId,
         amount: finalAmount,
         email: finalEmail,
         currency: currency,
         date: date,
         ip: ip
       });
+      
+      console.log("🔍 Raw request body:", JSON.stringify(req.body, null, 2));
 
       // Verify SHA256 signature if provided and secret key is set
       const secretKey = process.env.DIGISELLER_SECRET_KEY || "";
@@ -202,13 +205,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (secretKey && finalSignature && !isWidgetCallback) {
         // SHA256 hash format: password(lowercased);order_number;product_id
-        const dataToSign = `${secretKey.toLowerCase()};${finalInvId};${finalProductId}`;
+        const dataToSign = `${secretKey.toLowerCase()};${finalInvId};${productIdStr}`;
         const calculatedSign = crypto.createHash('sha256').update(dataToSign).digest('hex');
         
-        console.log("Signature verification:", {
+        console.log("🔐 Signature verification:", {
           received: finalSignature,
           calculated: calculatedSign,
-          dataToSign: dataToSign
+          dataToSign: dataToSign,
+          secretKey_length: secretKey.length,
+          secretKey_set: !!secretKey
         });
         
         if (finalSignature !== calculatedSign) {
@@ -238,13 +243,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "5355214": { bids: 1000, price: 15000 }
       };
 
-      const packageInfo = bidPackages[finalProductId];
+      console.log("🗂️ Available product IDs:", Object.keys(bidPackages));
+      console.log("🔍 Looking for product ID:", finalProductId, "(type:", typeof finalProductId, ")");
+      
+      // Convert product ID to string for consistent comparison
+      const productIdStr = String(finalProductId);
+      console.log("🔄 Converted product ID to string:", productIdStr);
+      
+      const packageInfo = bidPackages[productIdStr];
       if (!packageInfo) {
-        console.error("Unknown product ID:", finalProductId);
-        return res.status(400).json({ error: "Unknown product ID: " + finalProductId });
+        console.error("❌ Unknown product ID:", productIdStr, "(original:", finalProductId, ", type:", typeof finalProductId, ")");
+        console.error("❌ Available products:", Object.keys(bidPackages));
+        console.error("❌ Exact comparison results:");
+        Object.keys(bidPackages).forEach(key => {
+          console.error(`  "${key}" === "${productIdStr}": ${key === productIdStr}`);
+          console.error(`  "${key}" == "${productIdStr}": ${key == productIdStr}`);
+        });
+        return res.status(400).json({ 
+          error: "Unknown product ID: " + productIdStr,
+          original_value: finalProductId,
+          received_type: typeof finalProductId,
+          available_products: Object.keys(bidPackages)
+        });
       }
 
-      console.log("✅ Product found:", packageInfo, "for product ID:", finalProductId);
+      console.log("✅ Product found:", packageInfo, "for product ID:", productIdStr);
 
       // Find pending transaction by email and product ID
       let transaction = existingTransaction;
@@ -257,7 +280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const userTransactions = await storage.getUserTransactions(user.id, 10);
           transaction = userTransactions.find(t => 
             t.status === "pending" && 
-            t.digisellerProductId === finalProductId &&
+            t.digisellerProductId === productIdStr &&
             !t.digisellerInvoiceId
           );
           
@@ -281,7 +304,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               userId: user.id,
               userEmail: finalEmail,
               digisellerInvoiceId: finalInvId,
-              digisellerProductId: finalProductId,
+              digisellerProductId: productIdStr,
               amount: finalAmount.toString(),
               currency: currency || "KGS",
               bidsAmount: packageInfo.bids,
@@ -298,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
         
-        console.error("❌ Could not match payment to user:", { email: finalEmail, product_id: finalProductId });
+        console.error("❌ Could not match payment to user:", { email: finalEmail, product_id: productIdStr });
         return res.status(400).json({ error: "Could not match payment to user" });
       }
 
