@@ -112,8 +112,8 @@ export default function TopUp() {
       trackTopUp(selectedPackage.price);
     }
 
-    // Static Digiseller payment URLs
-    const paymentUrls: { [key: number]: string } = {
+    // Static Digiseller payment URLs with user ID passed as parameter
+    const basePaymentUrls: { [key: number]: string } = {
       1: 'https://oplata.info/asp2/pay_wm.asp?id_d=5484776&lang=ru-RU',
       2: 'https://oplata.info/asp2/pay_wm.asp?id_d=5487610&lang=ru-RU',
       3: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355203&lang=ru-RU',
@@ -121,8 +121,11 @@ export default function TopUp() {
       5: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355214&lang=ru-RU'
     };
 
-    const paymentUrl = paymentUrls[packageId];
-    if (paymentUrl) {
+    const baseUrl = basePaymentUrls[packageId];
+    if (baseUrl) {
+      // Add user ID as custom parameter - Digiseller will pass it back in Through parameter
+      const paymentUrl = `${baseUrl}&userid=${user.id}`;
+      
       // Open Digiseller payment page in new tab
       window.open(paymentUrl, '_blank', 'noopener,noreferrer');
       

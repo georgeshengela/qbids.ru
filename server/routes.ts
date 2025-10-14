@@ -184,6 +184,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Convert product ID to string for consistent comparison (MOVED UP)
       const productIdStr = String(finalProductId);
       
+      // Decode Through parameter to get user ID
+      let userIdFromThrough: string | null = null;
+      if (through) {
+        try {
+          // Decode base64
+          const decodedThrough = Buffer.from(through, 'base64').toString('utf-8');
+          console.log("🔓 Decoded Through parameter:", decodedThrough);
+          
+          // Parse as query string to extract userid
+          const params = new URLSearchParams(decodedThrough);
+          userIdFromThrough = params.get('userid');
+          
+          if (userIdFromThrough) {
+            console.log("✅ User ID found in Through parameter:", userIdFromThrough);
+          } else {
+            console.log("⚠️ No userid found in Through parameter");
+          }
+        } catch (error) {
+          console.error("❌ Failed to decode Through parameter:", error);
+        }
+      }
+      
       console.log("📨 Processed webhook data:", {
         inv_id: finalInvId,
         product_id: finalProductId,
@@ -191,6 +213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         product_id_string: productIdStr,
         amount: finalAmount,
         email: finalEmail,
+        user_id_from_through: userIdFromThrough,
         currency: currency,
         date: date,
         ip: ip
@@ -270,60 +293,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("✅ Product found:", packageInfo, "for product ID:", productIdStr);
 
-      // Find pending transaction by email and product ID
-      let transaction = existingTransaction;
+      // Find user - prioritize Through parameter, fallback to email
+      let user = null;
       
-      if (!transaction && finalEmail) {
-        // Try to find pending transaction by email and product
-        const user = await storage.getUserByEmail(finalEmail);
+      // Method 1: Try to find user by ID from Through parameter (PRIMARY METHOD)
+      if (userIdFromThrough) {
+        console.log("🔍 Attempting to find user by ID from Through parameter:", userIdFromThrough);
+        user = await storage.getUser(userIdFromThrough);
         if (user) {
-          console.log("✅ User found by email:", user.username);
-          const userTransactions = await storage.getUserTransactions(user.id, 10);
-          transaction = userTransactions.find(t => 
-            t.status === "pending" && 
-            t.digisellerProductId === productIdStr &&
-            !t.digisellerInvoiceId
-          );
-          
-          if (transaction) {
-            console.log("✅ Found matching pending transaction:", transaction.id);
-          }
+          console.log("✅ User found by Through parameter:", user.username, "(", user.id, ")");
+        } else {
+          console.log("❌ No user found with ID from Through parameter:", userIdFromThrough);
+        }
+      }
+      
+      // Method 2: Fallback to email matching (BACKUP METHOD)
+      if (!user && finalEmail) {
+        console.log("🔍 Attempting to find user by email:", finalEmail);
+        user = await storage.getUserByEmail(finalEmail);
+        if (user) {
+          console.log("✅ User found by email:", user.username, "(", user.id, ")");
         } else {
           console.log("❌ No user found with email:", finalEmail);
         }
       }
 
-      if (!transaction) {
-        console.log("Creating new transaction for email:", finalEmail);
-        
-        // Try to find user by email
-        if (finalEmail) {
-          const user = await storage.getUserByEmail(finalEmail);
-          if (user) {
-            // Create new transaction
-            transaction = await storage.createTransaction({
-              userId: user.id,
-              userEmail: finalEmail,
-              digisellerInvoiceId: finalInvId,
-              digisellerProductId: productIdStr,
-              amount: finalAmount.toString(),
-              currency: currency || "KGS",
-              bidsAmount: packageInfo.bids,
-              status: "completed",
-              paymentMethod: agent || "digiseller",
-              metadata: req.body
-            });
+      // If no user found by either method, reject
+      if (!user) {
+        console.error("❌ Could not match payment to user:", { 
+          user_id_from_through: userIdFromThrough,
+          email: finalEmail, 
+          product_id: productIdStr 
+        });
+        return res.status(400).json({ 
+          error: "Could not match payment to user",
+          details: "User ID not found in payment data"
+        });
+      }
 
-            // Add bids to user balance
-            await storage.addBidsToUser(user.id, packageInfo.bids);
-            
-            console.log(`✅ Successfully processed payment: ${finalInvId}, added ${packageInfo.bids} bids to user ${user.id}`);
-            return res.status(200).json({ status: "ok" });
-          }
-        }
+      // Find or create transaction
+      let transaction = existingTransaction;
+      
+      if (!transaction) {
+        // Try to find pending transaction for this user
+        const userTransactions = await storage.getUserTransactions(user.id, 10);
+        transaction = userTransactions.find(t => 
+          t.status === "pending" && 
+          t.digisellerProductId === productIdStr &&
+          !t.digisellerInvoiceId
+        );
         
-        console.error("❌ Could not match payment to user:", { email: finalEmail, product_id: productIdStr });
-        return res.status(400).json({ error: "Could not match payment to user" });
+        if (transaction) {
+          console.log("✅ Found matching pending transaction:", transaction.id);
+        }
+      }
+
+      if (!transaction) {
+        console.log("📝 Creating new transaction for user:", user.id);
+        
+        // Create new transaction
+        transaction = await storage.createTransaction({
+          userId: user.id,
+          userEmail: finalEmail || user.email,
+          digisellerInvoiceId: finalInvId,
+          digisellerProductId: productIdStr,
+          amount: finalAmount.toString(),
+          currency: currency || "KGS",
+          bidsAmount: packageInfo.bids,
+          status: "completed",
+          paymentMethod: agent ? String(agent) : "digiseller",
+          metadata: req.body
+        });
+
+        // Add bids to user balance
+        await storage.addBidsToUser(user.id, packageInfo.bids);
+        
+        console.log(`✅ Successfully processed payment: ${finalInvId}, added ${packageInfo.bids} bids to user ${user.id} (${user.username})`);
+        return res.status(200).json({ status: "ok" });
       }
 
       // Update existing transaction
