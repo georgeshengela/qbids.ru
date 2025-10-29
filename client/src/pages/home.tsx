@@ -36,7 +36,7 @@ function HeroSection({ isAuthenticated }: { isAuthenticated: boolean }) {
               <span className="text-yellow-300"> за копейки!</span>
             </h1>
             <p className="text-lg text-blue-100">
-              Пенни-аукционы №1 в Кыргызстане. Экономьте до 99% на iPhone, MacBook и других гаджетах
+              Пенни-аукционы №1 в России. Экономьте до 99% на iPhone, MacBook и других гаджетах
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -106,7 +106,7 @@ function HeroSection({ isAuthenticated }: { isAuthenticated: boolean }) {
 }
 
 export default function Home() {
-  useDocumentTitle("QBIDS.KG - №1 Пенни-аукционы в Кыргызстане | Выиграй iPhone за копейки");
+  useDocumentTitle("QBIDS.RU - №1 Пенни-аукционы в России | Выиграй iPhone за копейки");
   
   const { connected } = useSocket();
   const { user, isAuthenticated } = useAuth();
