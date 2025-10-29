@@ -586,6 +586,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Session save error:", err);
           return res.status(500).json({ error: "Session error" });
         }
+        console.log("Session saved successfully! Session ID:", req.sessionID, "User ID:", req.session.userId);
+        console.log("Session cookie being set:", req.session.cookie);
         res.json({ user: { id: user.id, username: user.username, bidBalance: user.bidBalance, role: user.role } });
       });
     } catch (error: any) {
@@ -622,6 +624,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Session save error:", err);
           return res.status(500).json({ error: "Session error" });
         }
+        console.log("Session saved successfully! Session ID:", req.sessionID, "User ID:", req.session.userId);
+        console.log("Session cookie being set:", req.session.cookie);
         res.json({ user: { id: user.id, username: user.username, bidBalance: user.bidBalance, role: user.role } });
       });
     } catch (error) {
