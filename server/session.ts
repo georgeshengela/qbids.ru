@@ -22,7 +22,7 @@ export function createSessionMiddleware() {
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // Must be false in development behind proxy
+      secure: true, // REQUIRED when sameSite is "none" - Replit proxy handles HTTPS
       httpOnly: true,
       maxAge: 30 * 60 * 1000, // 30 minutes (banking standard)
       sameSite: "none", // Required for Replit proxy/iframe environment
