@@ -15,191 +15,117 @@ import { socketService } from "@/lib/socket";
 import { createSlug } from "@/lib/utils";
 import type { Auction, Bid } from "@/types/auction";
 
-// Samsung Galaxy Z Fold 7 Hero Countdown Component
-function SamsungHeroCountdown({ formatCurrency, auctionsData }: { 
-  formatCurrency: (amount: number) => string;
-  auctionsData?: { live: Auction[]; upcoming: Auction[]; finished: Auction[] };
-}) {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [hasLoadedData, setHasLoadedData] = useState(false);
-
-  useEffect(() => {
-    // Find the QB/1113 Samsung auction
-    const samsungAuction = auctionsData?.upcoming?.find(auction => 
-      auction.title.toLowerCase().includes('samsung galaxy z fold 7') ||
-      auction.title.toLowerCase().includes('qb/1113')
-    );
-    
-    const updateCountdown = () => {
-      const now = Date.now();
-      let difference = 0;
-      
-      if (samsungAuction) {
-        // Mark that we have real data and use real auction start time
-        setHasLoadedData(true);
-        const auctionStart = new Date(samsungAuction.startTime).getTime();
-        difference = auctionStart - now;
-      } else if (hasLoadedData) {
-        // If we previously had data but don't now, use fallback
-        const auctionStart = Date.now() + (48 * 60 * 60 * 1000);
-        difference = auctionStart - now;
-      } else {
-        // Show zeros while loading real data
-        difference = 0;
-      }
-      
-      if (difference > 0) {
-        setTimeLeft({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((difference % (1000 * 60)) / 1000)
-        });
-      } else {
-        // Show zeros when no valid time difference
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      }
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, [auctionsData, hasLoadedData]);
-
+// Hero Section Component
+function HeroSection({ isAuthenticated }: { isAuthenticated: boolean }) {
+  const { t } = useLanguage();
+  
   return (
-    <section className="relative min-h-screen bg-white overflow-hidden">
-      {/* Clean background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50"></div>
-        <div className="absolute top-0 left-0 w-full h-full opacity-5">
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-200 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-purple-200 rounded-full blur-3xl"></div>
-        </div>
+    <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
-      <div className="relative z-10 max-w-[1504px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start min-h-screen pt-8 sm:pt-16 pb-4">
-          
-          {/* Left Content */}
-          <div className="space-y-6 sm:space-y-10 flex flex-col justify-start order-1 lg:order-1">
-            {/* Badge */}
-            <div className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg">
-              <div className="w-2 h-2 bg-white rounded-full mr-2 sm:mr-3 animate-pulse"></div>
-              <span className="text-xs sm:text-sm font-semibold tracking-wide">ЭКСКЛЮЗИВНАЯ ПРЕМЬЕРА</span>
-            </div>
-            
-            {/* Main headline */}
-            <div className="space-y-4 sm:space-y-6">
-              <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-gray-900 leading-none tracking-tight">
-                Samsung Galaxy
-                <br />
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-                  Z Fold 7
-                </span>
-              </h1>
-              
-              <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 leading-relaxed font-light max-w-lg">
-                Первый в мире аукцион революционного складного смартфона
-              </p>
-              
-              <div className="flex items-center space-x-2 sm:space-x-3 text-gray-500">
-                <i className="fas fa-star text-yellow-500 text-sm sm:text-base"></i>
-                <span className="text-sm sm:text-base">Официальная модель • Гарантия Samsung • Новый в упаковке</span>
-                <i className="fas fa-star text-yellow-500 text-sm sm:text-base"></i>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+        <div className="text-center space-y-8">
+          {/* Main Headline */}
+          <div className="space-y-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight">
+              Выигрывайте премиум товары
+              <br />
+              <span className="text-yellow-300">за копейки!</span>
+            </h1>
+            <p className="text-xl sm:text-2xl text-blue-100 font-light max-w-3xl mx-auto">
+              Пенни-аукционы №1 в Кыргызстане. Каждая ставка = реальный шанс выиграть iPhone, MacBook и другие гаджеты до 99% дешевле
+            </p>
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-12">
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+              <div className="w-14 h-14 bg-yellow-400 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-gavel text-2xl text-blue-900"></i>
               </div>
+              <h3 className="text-lg font-bold text-white mb-2">Честные аукционы</h3>
+              <p className="text-blue-100 text-sm">Прозрачная система торгов. Каждая ставка увеличивает цену всего на 1 сом</p>
             </div>
 
-            {/* Countdown Timer */}
-            <div className="space-y-4 sm:space-y-8">
-              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">
-                Аукцион начинается через
-              </h2>
-              
-              <div className="flex space-x-2 sm:space-x-4">
-                {[
-                  { value: timeLeft.days, label: 'дней' },
-                  { value: timeLeft.hours, label: 'часов' },
-                  { value: timeLeft.minutes, label: 'минут' },
-                  { value: timeLeft.seconds, label: 'секунд' }
-                ].map((unit, index) => (
-                  <div key={unit.label} className="flex items-center space-x-2 sm:space-x-4">
-                    <div className="text-center">
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl border border-gray-100 transform hover:scale-105 transition-transform duration-300">
-                        <span className="text-lg sm:text-2xl lg:text-3xl font-black text-gray-800">
-                          {unit.value.toString().padStart(2, '0')}
-                        </span>
-                      </div>
-                      <span className="block text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 uppercase tracking-wide font-medium">
-                        {unit.label}
-                      </span>
-                    </div>
-                    {index < 3 && (
-                      <div className="text-lg sm:text-2xl text-gray-400 font-light">:</div>
-                    )}
-                  </div>
-                ))}
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+              <div className="w-14 h-14 bg-green-400 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-bolt text-2xl text-blue-900"></i>
               </div>
+              <h3 className="text-lg font-bold text-white mb-2">Мгновенные результаты</h3>
+              <p className="text-blue-100 text-sm">Ставка в последние 10 секунд продлевает аукцион. Будьте последним!</p>
             </div>
 
-            {/* Call to action */}
-            <div className="space-y-3 sm:space-y-4">
-              <button 
-                onClick={() => window.location.href = '/auction/samsung-galaxy-z-fold-7-qb-1113'}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white text-lg sm:text-xl font-bold py-4 sm:py-6 px-6 sm:px-8 rounded-xl sm:rounded-2xl shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-300"
-              >
-                <i className="fas fa-bell mr-2 sm:mr-3"></i>
-                Уведомить о старте аукциона
-              </button>
-              
-              <button className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white text-base sm:text-lg font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300">
-                <i className="fas fa-user-plus mr-2"></i>
-                Создать аккаунт
-              </button>
+            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
+              <div className="w-14 h-14 bg-purple-400 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <i className="fas fa-shield-alt text-2xl text-blue-900"></i>
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2">Гарантия качества</h3>
+              <p className="text-blue-100 text-sm">100% оригинальная продукция с официальной гарантией</p>
             </div>
           </div>
 
-          {/* Right Content - Product & Pricing */}
-          <div className="space-y-6 sm:space-y-8 flex flex-col justify-start order-2 lg:order-2">
-            
-            {/* Product showcase */}
-            <div className="relative max-w-sm sm:max-w-lg mx-auto">
-              <div className="aspect-square bg-white rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl border border-gray-100">
-                <div className="relative h-full">
-                  <img 
-                    src="https://www.spark.co.nz/content/dam/spark/images/product-images/devices/phones/samsung/z-series/z-fold7/zfold7-blue-shadow-1.png" 
-                    alt="Samsung Galaxy Z Fold 7" 
-                    className="w-full h-full object-contain hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-              </div>
-              
-              <div className="absolute -top-4 -right-4 sm:-top-6 sm:-right-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-3 py-2 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-lg">
-                <i className="fas fa-crown mr-1 sm:mr-2"></i>
-                Premium Edition
-              </div>
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-8 pt-8">
+            <div className="text-center">
+              <div className="text-4xl font-black text-yellow-300 mb-1">5000+</div>
+              <div className="text-blue-100 text-sm">Активных пользователей</div>
             </div>
-
-            {/* Pricing comparison */}
-            <div className="space-y-4 sm:space-y-6">
-              <div className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl border border-gray-100">
-                <div className="flex justify-between items-center mb-4 sm:mb-6">
-                  <span className="text-gray-600 text-base sm:text-lg">Розничная цена</span>
-                  <span className="text-red-500 line-through text-2xl sm:text-3xl font-bold">{formatCurrency(179900)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-800 font-semibold text-base sm:text-lg">Стартовая цена аукциона</span>
-                  <span className="text-green-600 text-3xl sm:text-4xl font-black">{formatCurrency(0.01)}</span>
-                </div>
-              </div>
-              
-              <div className="text-center py-4 sm:py-6">
-                <span className="inline-block bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-lg sm:text-xl shadow-lg">
-                  Экономия до 99.9%
-                </span>
-              </div>
+            <div className="text-center">
+              <div className="text-4xl font-black text-yellow-300 mb-1">99%</div>
+              <div className="text-blue-100 text-sm">Максимальная экономия</div>
             </div>
+            <div className="text-center">
+              <div className="text-4xl font-black text-yellow-300 mb-1">24/7</div>
+              <div className="text-blue-100 text-sm">Новые аукционы</div>
+            </div>
+          </div>
 
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+            {!isAuthenticated ? (
+              <>
+                <Link href="/login">
+                  <Button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold text-lg px-8 py-6 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 border-0">
+                    <i className="fas fa-rocket mr-2"></i>
+                    Начать выигрывать
+                  </Button>
+                </Link>
+                <Link href="/how-it-works">
+                  <Button className="bg-white/10 hover:bg-white/20 backdrop-blur-lg text-white font-semibold text-lg px-8 py-6 rounded-xl border-2 border-white/30 hover:border-white/50 transition-all duration-300">
+                    <i className="fas fa-play-circle mr-2"></i>
+                    Как это работает?
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Link href="/auctions">
+                <Button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold text-lg px-8 py-6 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 border-0">
+                  <i className="fas fa-eye mr-2"></i>
+                  Посмотреть аукционы
+                </Button>
+              </Link>
+            )}
+          </div>
 
+          {/* Trust Indicators */}
+          <div className="pt-8 flex items-center justify-center space-x-6 text-blue-100 text-sm">
+            <div className="flex items-center space-x-2">
+              <i className="fas fa-check-circle text-green-400"></i>
+              <span>Безопасные платежи</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <i className="fas fa-check-circle text-green-400"></i>
+              <span>Быстрая доставка</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <i className="fas fa-check-circle text-green-400"></i>
+              <span>Поддержка 24/7</span>
+            </div>
           </div>
         </div>
       </div>
@@ -282,8 +208,8 @@ export default function Home() {
     <div className="bg-gray-50">
       <Header />
       
-      {/* Samsung Galaxy Z Fold 7 Hero Section */}
-      <SamsungHeroCountdown formatCurrency={formatCurrency} auctionsData={auctionsData} />
+      {/* Hero Section */}
+      <HeroSection isAuthenticated={isAuthenticated} />
 
       
       <main className="max-w-[1504px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-4">
