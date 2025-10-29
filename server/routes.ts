@@ -580,7 +580,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.userId = user.id;
       req.session.userRole = user.role;
 
-      res.json({ user: { id: user.id, username: user.username, bidBalance: user.bidBalance, role: user.role } });
+      // Explicitly save the session before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ error: "Session error" });
+        }
+        res.json({ user: { id: user.id, username: user.username, bidBalance: user.bidBalance, role: user.role } });
+      });
     } catch (error: any) {
       console.error("Registration error:", error);
       if (error.errors) {
@@ -609,7 +616,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       req.session.userId = user.id;
       req.session.userRole = user.role;
 
-      res.json({ user: { id: user.id, username: user.username, bidBalance: user.bidBalance, role: user.role } });
+      // Explicitly save the session before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ error: "Session error" });
+        }
+        res.json({ user: { id: user.id, username: user.username, bidBalance: user.bidBalance, role: user.role } });
+      });
     } catch (error) {
       res.status(400).json({ error: getErrorMessage(req, 'invalidData') });
     }
