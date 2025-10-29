@@ -22,10 +22,10 @@ export function createSessionMiddleware() {
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.COOKIE_SECURE === "true",
+      secure: false, // Must be false in development behind proxy
       httpOnly: true,
       maxAge: 30 * 60 * 1000, // 30 minutes (banking standard)
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      sameSite: "none", // Required for Replit proxy/iframe environment
     },
   });
 }
