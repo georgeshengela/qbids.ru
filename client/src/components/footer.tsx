@@ -20,7 +20,7 @@ export function Footer() {
               </h3>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
-              {settings?.footerDescription || "Первая пенни-аукционная платформа в Кыргызстане. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов."}
+              {settings?.footerDescription || "Первая пенни-аукционная платформа в России. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов."}
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-yellow-400 transition-colors">
@@ -215,10 +215,10 @@ export function Footer() {
               {!settings?.language && " Все права защищены."}
             </p>
             <p className="text-yellow-400 text-sm">
-              {settings?.language === "ru" && "Первая пенни-аукционная платформа в Кыргызстане"}
-              {settings?.language === "en" && "First penny auction platform in Kyrgyzstan"}
-              {settings?.language === "ka" && "პირველი პენი აუქციონის პლატფორმა ყირგიზეთში"}
-              {!settings?.language && "Первая пенни-аукционная платформа в Кыргызстане"}
+              {settings?.language === "ru" && "Первая пенни-аукционная платформа в России"}
+              {settings?.language === "en" && "First penny auction platform in Russia"}
+              {settings?.language === "ka" && "პირველი პენი აუქციონის პლატფორმა რუსეთში"}
+              {!settings?.language && "Первая пенни-аукционная платформа в России"}
             </p>
           </div>
         </div>
