@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Header } from "@/components/header";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -93,15 +94,17 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-primary">
-            <i className="fas fa-gavel mr-2"></i>
-            qbids.kg
-          </h1>
-          <p className="text-gray-600 mt-2">Добро пожаловать в мир пенни-аукционов</p>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="flex items-center justify-center p-4 pt-8">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-primary">
+              <i className="fas fa-gavel mr-2"></i>
+              qbids.kg
+            </h1>
+            <p className="text-gray-600 mt-2">Добро пожаловать в мир пенни-аукционов</p>
+          </div>
 
         <Card>
           <CardHeader>
@@ -219,6 +222,7 @@ export default function Login() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
