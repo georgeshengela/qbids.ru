@@ -25,106 +25,78 @@ function HeroSection({ isAuthenticated }: { isAuthenticated: boolean }) {
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute top-1/2 -left-40 w-80 h-80 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        <div className="text-center space-y-8">
-          {/* Main Headline */}
-          <div className="space-y-4">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight">
+      <div className="relative z-10 max-w-[1504px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          {/* Left Side - Main Content */}
+          <div className="space-y-6">
+            <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight">
               Выигрывайте премиум товары
-              <br />
-              <span className="text-yellow-300">за копейки!</span>
+              <span className="text-yellow-300"> за копейки!</span>
             </h1>
-            <p className="text-xl sm:text-2xl text-blue-100 font-light max-w-3xl mx-auto">
-              Пенни-аукционы №1 в Кыргызстане. Каждая ставка = реальный шанс выиграть iPhone, MacBook и другие гаджеты до 99% дешевле
+            <p className="text-lg text-blue-100">
+              Пенни-аукционы №1 в Кыргызстане. Экономьте до 99% на iPhone, MacBook и других гаджетах
             </p>
-          </div>
-
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mt-12">
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
-              <div className="w-14 h-14 bg-yellow-400 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-gavel text-2xl text-blue-900"></i>
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Честные аукционы</h3>
-              <p className="text-blue-100 text-sm">Прозрачная система торгов. Каждая ставка увеличивает цену всего на 1 сом</p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
-              <div className="w-14 h-14 bg-green-400 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-bolt text-2xl text-blue-900"></i>
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Мгновенные результаты</h3>
-              <p className="text-blue-100 text-sm">Ставка в последние 10 секунд продлевает аукцион. Будьте последним!</p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
-              <div className="w-14 h-14 bg-purple-400 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <i className="fas fa-shield-alt text-2xl text-blue-900"></i>
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">Гарантия качества</h3>
-              <p className="text-blue-100 text-sm">100% оригинальная продукция с официальной гарантией</p>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-8 pt-8">
-            <div className="text-center">
-              <div className="text-4xl font-black text-yellow-300 mb-1">5000+</div>
-              <div className="text-blue-100 text-sm">Активных пользователей</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-black text-yellow-300 mb-1">99%</div>
-              <div className="text-blue-100 text-sm">Максимальная экономия</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-black text-yellow-300 mb-1">24/7</div>
-              <div className="text-blue-100 text-sm">Новые аукционы</div>
-            </div>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
-            {!isAuthenticated ? (
-              <>
-                <Link href="/login">
-                  <Button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold text-lg px-8 py-6 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 border-0">
-                    <i className="fas fa-rocket mr-2"></i>
-                    Начать выигрывать
+            
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              {!isAuthenticated ? (
+                <>
+                  <Link href="/login">
+                    <Button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold px-6 py-3 rounded-lg shadow-lg hover:scale-105 transition-all duration-300 border-0">
+                      <i className="fas fa-rocket mr-2"></i>
+                      Начать выигрывать
+                    </Button>
+                  </Link>
+                  <Link href="/how-it-works">
+                    <Button className="bg-white/10 hover:bg-white/20 backdrop-blur-lg text-white font-semibold px-6 py-3 rounded-lg border border-white/30 transition-all duration-300">
+                      Как это работает?
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <Link href="/auctions">
+                  <Button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold px-6 py-3 rounded-lg shadow-lg hover:scale-105 transition-all duration-300 border-0">
+                    <i className="fas fa-eye mr-2"></i>
+                    Посмотреть аукционы
                   </Button>
                 </Link>
-                <Link href="/how-it-works">
-                  <Button className="bg-white/10 hover:bg-white/20 backdrop-blur-lg text-white font-semibold text-lg px-8 py-6 rounded-xl border-2 border-white/30 hover:border-white/50 transition-all duration-300">
-                    <i className="fas fa-play-circle mr-2"></i>
-                    Как это работает?
-                  </Button>
-                </Link>
-              </>
-            ) : (
-              <Link href="/auctions">
-                <Button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold text-lg px-8 py-6 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 border-0">
-                  <i className="fas fa-eye mr-2"></i>
-                  Посмотреть аукционы
-                </Button>
-              </Link>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Trust Indicators */}
-          <div className="pt-8 flex items-center justify-center space-x-6 text-blue-100 text-sm">
-            <div className="flex items-center space-x-2">
-              <i className="fas fa-check-circle text-green-400"></i>
-              <span>Безопасные платежи</span>
+          {/* Right Side - Features */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+              <div className="w-12 h-12 bg-yellow-400 rounded-lg flex items-center justify-center mb-3">
+                <i className="fas fa-gavel text-xl text-blue-900"></i>
+              </div>
+              <h3 className="text-base font-bold text-white mb-1">Честные аукционы</h3>
+              <p className="text-blue-100 text-sm">Прозрачная система торгов</p>
             </div>
-            <div className="flex items-center space-x-2">
-              <i className="fas fa-check-circle text-green-400"></i>
-              <span>Быстрая доставка</span>
+
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+              <div className="w-12 h-12 bg-green-400 rounded-lg flex items-center justify-center mb-3">
+                <i className="fas fa-bolt text-xl text-blue-900"></i>
+              </div>
+              <h3 className="text-base font-bold text-white mb-1">Мгновенные результаты</h3>
+              <p className="text-blue-100 text-sm">Реал-тайм обновления</p>
             </div>
-            <div className="flex items-center space-x-2">
-              <i className="fas fa-check-circle text-green-400"></i>
-              <span>Поддержка 24/7</span>
+
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+              <div className="w-12 h-12 bg-purple-400 rounded-lg flex items-center justify-center mb-3">
+                <i className="fas fa-shield-alt text-xl text-blue-900"></i>
+              </div>
+              <h3 className="text-base font-bold text-white mb-1">Гарантия качества</h3>
+              <p className="text-blue-100 text-sm">100% оригинальная продукция</p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+              <div className="w-12 h-12 bg-blue-400 rounded-lg flex items-center justify-center mb-3">
+                <i className="fas fa-percentage text-xl text-blue-900"></i>
+              </div>
+              <h3 className="text-base font-bold text-white mb-1">Экономия до 99%</h3>
+              <p className="text-blue-100 text-sm">Выигрывайте по минимальной цене</p>
             </div>
           </div>
         </div>
