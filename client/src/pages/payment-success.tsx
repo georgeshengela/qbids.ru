@@ -10,7 +10,7 @@ export default function PaymentSuccess() {
   const [, navigate] = useLocation();
 
   useEffect(() => {
-    document.title = `${t('paymentSuccessful')} - QBIDS.KG`;
+    document.title = `${t('paymentSuccessful')} - QBIDS.RU`;
   }, [t]);
 
   return (

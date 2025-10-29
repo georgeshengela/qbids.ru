@@ -81,7 +81,7 @@ export default function TermsOfService() {
   const liabilityItems = [
     {
       title: "Ограничение ответственности",
-      description: "QBIDS.KG не несет ответственности за косвенные убытки, упущенную выгоду или моральный вред."
+      description: "QBIDS.RU не несет ответственности за косвенные убытки, упущенную выгоду или моральный вред."
     },
     {
       title: "Качество товаров",
@@ -109,7 +109,7 @@ export default function TermsOfService() {
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Условия использования</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Пользовательское соглашение определяет правила и условия использования платформы QBIDS.KG.
+            Пользовательское соглашение определяет правила и условия использования платформы QBIDS.RU.
           </p>
           <div className="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
             <span>Вступили в силу: 01.01.2025</span>
@@ -204,7 +204,7 @@ export default function TermsOfService() {
               <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
                 <h3 className="font-semibold text-orange-800 mb-2">Применимое право</h3>
                 <p className="text-orange-700 text-sm">
-                  Настоящие условия регулируются законодательством Кыргызской Республики. Споры подлежат рассмотрению в судах Кыргызстана.
+                  Настоящие условия регулируются законодательством Российской Федерации. Споры подлежат рассмотрению в судах России.
                 </p>
               </div>
 
@@ -231,15 +231,15 @@ export default function TermsOfService() {
               <div className="space-y-3">
                 <div className="flex items-center text-gray-600">
                   <i className="fas fa-envelope w-5 mr-3"></i>
-                  <span>legal@qbids.kg</span>
+                  <span>legal@qbids.ru</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <i className="fas fa-phone w-5 mr-3"></i>
-                  <span>+996 XXX XXX XXX</span>
+                  <span>+7 (495) 123-4567</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <i className="fas fa-map-marker-alt w-5 mr-3"></i>
-                  <span>г. Бишкек, Кыргызская Республика</span>
+                  <span>г. Москва, Российская Федерация</span>
                 </div>
               </div>
             </CardContent>

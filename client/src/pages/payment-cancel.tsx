@@ -10,7 +10,7 @@ export default function PaymentCancel() {
   const [, navigate] = useLocation();
 
   useEffect(() => {
-    document.title = `${t('paymentCancelled')} - QBIDS.KG`;
+    document.title = `${t('paymentCancelled')} - QBIDS.RU`;
   }, [t]);
 
   return (
@@ -43,8 +43,8 @@ export default function PaymentCancel() {
                   Если у вас возникли проблемы с оплатой, наша служба поддержки всегда готова помочь.
                 </p>
                 <ul className="text-sm text-slate-600 space-y-1">
-                  <li>📧 Email: info@qbids.kg</li>
-                  <li>📱 Телефон: +996 (555) 123-456</li>
+                  <li>📧 Email: info@qbids.ru</li>
+                  <li>📱 Телефон: +7 (495) 123-4567</li>
                   <li>💬 Онлайн-чат доступен 24/7</li>
                 </ul>
               </div>

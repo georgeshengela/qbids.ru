@@ -223,15 +223,15 @@ export default function PrivacyPolicy() {
                 <div className="space-y-2 text-gray-600">
                   <div className="flex items-center">
                     <i className="fas fa-envelope w-5 mr-3"></i>
-                    <span>privacy@qbids.kg</span>
+                    <span>privacy@qbids.ru</span>
                   </div>
                   <div className="flex items-center">
                     <i className="fas fa-phone w-5 mr-3"></i>
-                    <span>+996 XXX XXX XXX</span>
+                    <span>+7 (495) 123-4567</span>
                   </div>
                   <div className="flex items-center">
                     <i className="fas fa-map-marker-alt w-5 mr-3"></i>
-                    <span>г. Бишкек, Кыргызская Республика</span>
+                    <span>г. Москва, Российская Федерация</span>
                   </div>
                 </div>
               </div>

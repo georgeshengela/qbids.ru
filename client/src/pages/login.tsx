@@ -101,7 +101,7 @@ export default function Login() {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-primary">
               <i className="fas fa-gavel mr-2"></i>
-              qbids.kg
+              qbids.ru
             </h1>
             <p className="text-gray-600 mt-2">Добро пожаловать в мир пенни-аукционов</p>
           </div>

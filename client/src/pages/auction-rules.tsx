@@ -73,16 +73,16 @@ export default function AuctionRules() {
   const deliveryRules = [
     {
       title: "Самовывоз",
-      description: "Бесплатно из офиса в Бишкеке",
+      description: "Бесплатно из офиса в Москве",
       time: "В рабочие дни с 9:00 до 18:00"
     },
     {
-      title: "Доставка по Бишкеку",
+      title: "Доставка по Москве",
       description: "Курьерская доставка",
-      time: "200 сом, 1-2 рабочих дня"
+      time: "500 руб, 1-2 рабочих дня"
     },
     {
-      title: "Доставка по регионам",
+      title: "Доставка по России",
       description: "Почтовая служба или транспортные компании",
       time: "По тарифам перевозчика, 3-7 дней"
     }
@@ -100,7 +100,7 @@ export default function AuctionRules() {
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Правила аукционов</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Ознакомьтесь с правилами участия в пенни-аукционах QBIDS.KG для честной и безопасной игры.
+            Ознакомьтесь с правилами участия в пенни-аукционах QBIDS.RU для честной и безопасной игры.
           </p>
         </div>
 
@@ -206,7 +206,7 @@ export default function AuctionRules() {
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                 <h3 className="font-semibold text-green-800 mb-2">Честная игра</h3>
                 <p className="text-green-700">
-                  QBIDS.KG стремится обеспечить честные и прозрачные аукционы для всех участников. Мы постоянно мониторим систему для предотвращения мошенничества.
+                  QBIDS.RU стремится обеспечить честные и прозрачные аукционы для всех участников. Мы постоянно мониторим систему для предотвращения мошенничества.
                 </p>
               </div>
             </div>
