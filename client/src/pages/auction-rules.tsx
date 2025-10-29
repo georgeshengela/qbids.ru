@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 export default function AuctionRules() {
-  useDocumentTitle("Правила аукционов - QBIDS.KG | Условия участия в пенни-аукционах");
+  useDocumentTitle("Правила аукционов - QBIDS.RU | Условия участия в пенни-аукционах");
   const { formatCurrency } = useSettings();
   const { t } = useLanguage();
 
@@ -17,7 +17,7 @@ export default function AuctionRules() {
       title: "Как начать участие",
       color: "green",
       rules: [
-        "Зарегистрируйтесь на сайте QBIDS.KG",
+        "Зарегистрируйтесь на сайте QBIDS.RU",
         "Пополните баланс бидов через удобный способ оплаты",
         "Выберите интересующий вас аукцион",
         "Дождитесь начала аукциона и начинайте делать ставки"
