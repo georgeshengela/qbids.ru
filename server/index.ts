@@ -7,6 +7,10 @@ import { auctionService } from "./services/auction-service";
 process.env.TZ = 'Asia/Bishkek';
 
 const app = express();
+
+// Trust the Replit proxy so sessions work correctly
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
