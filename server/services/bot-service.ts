@@ -69,6 +69,7 @@ export class BotService {
   // Bot bidding logic with simple rotation
   private currentBotIndex = new Map<string, number>();
   private lastBidTime = new Map<string, number>();
+  private lastBotId = new Map<string, string>(); // Track last bot that bid to prevent consecutive bids
   private auctionLocks = new Map<string, boolean>();
 
   async checkAndPlaceBotBid(auctionId: string, currentTimer: number): Promise<void> {
@@ -112,24 +113,43 @@ export class BotService {
         return;
       }
 
-      // If only one bot remains, let them win - don't bid against yourself!
-      if (activeBots.length === 1) {
-        console.log(`Only one bot (${activeBots[0].bot.username}) remains active with ${activeBots[0].bidLimit - activeBots[0].currentBids} bids left. Letting them win instead of bidding against themselves.`);
-        return;
-      }
-
-      // Multiple bots competing - continue the battle  
-      // If timer is at 2 seconds and multiple bots are active, force a bid to keep competition alive
-      if (currentTimer === 2 && activeBots.length > 1) {
-        console.log(`Timer at 2 seconds with ${activeBots.length} active bots - forcing bid to continue competition`);
-      }
-
-      // Get current bot index for this auction (carousel rotation)
-      let currentIndex = this.currentBotIndex.get(auctionId) || 0;
-      const selectedBot = activeBots[currentIndex % activeBots.length];
+      // Continue bidding even with 1 bot - they will use all their bids
+      // This ensures all 1500 bids are used when configured as 500-500-500
       
-      // Update index for next time and track this bid
-      this.currentBotIndex.set(auctionId, (currentIndex + 1) % activeBots.length);
+      let selectedBot;
+      const lastBotThatBid = this.lastBotId.get(auctionId);
+      
+      if (activeBots.length === 1) {
+        // Only one bot left, use all their remaining bids
+        selectedBot = activeBots[0];
+        console.log(`Single bot ${selectedBot.bot.username} continuing with ${selectedBot.bidLimit - selectedBot.currentBids} bids remaining`);
+      } else {
+        // Multiple bots: ensure we select a DIFFERENT bot than the last one
+        let attempts = 0;
+        let currentIndex = this.currentBotIndex.get(auctionId) || 0;
+        
+        do {
+          selectedBot = activeBots[currentIndex % activeBots.length];
+          currentIndex++;
+          attempts++;
+          
+          // If we've tried all bots and they're all the same as last (shouldn't happen), just use current
+          if (attempts > activeBots.length) {
+            break;
+          }
+        } while (selectedBot.botId === lastBotThatBid && activeBots.length > 1);
+        
+        // Update index for next time
+        this.currentBotIndex.set(auctionId, currentIndex);
+        
+        // Force bid at 2 seconds to keep competition alive
+        if (currentTimer === 2) {
+          console.log(`Timer at 2 seconds with ${activeBots.length} active bots - forcing bid to continue competition`);
+        }
+      }
+      
+      // Track this bot as the last bidder
+      this.lastBotId.set(auctionId, selectedBot.botId);
       this.lastBidTime.set(auctionId, now);
 
       console.log(`Bot ${selectedBot.bot.username} placing bid (${selectedBot.currentBids + 1}/${selectedBot.bidLimit}) at timer ${currentTimer}`);
@@ -147,6 +167,7 @@ export class BotService {
     // Initialize bot rotation for this auction
     this.currentBotIndex.set(auctionId, 0);
     this.lastBidTime.set(auctionId, 0);
+    this.lastBotId.delete(auctionId); // Clear last bot tracker
     this.auctionLocks.set(auctionId, false);
   }
 
@@ -154,6 +175,7 @@ export class BotService {
     // Clean up bot rotation state
     this.currentBotIndex.delete(auctionId);
     this.lastBidTime.delete(auctionId);
+    this.lastBotId.delete(auctionId);
     this.auctionLocks.delete(auctionId);
   }
 }
