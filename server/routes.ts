@@ -1124,6 +1124,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/server-time", (req, res) => {
+    res.json({
+      serverTime: new Date().toISOString(),
+      serverTimeLocal: new Date().toString(),
+      timezone: process.env.TZ || 'Not set'
+    });
+  });
+
   app.put("/api/admin/auctions/:id", async (req, res) => {
     if (req.session.userRole !== "admin") {
       return res.status(403).json({ error: "Доступ запрещен" });
