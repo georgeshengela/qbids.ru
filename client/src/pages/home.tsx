@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "@/hooks/use-socket";
 import { useAuth } from "@/hooks/use-auth";
 import { useDocumentTitle } from "@/hooks/use-document-title";
@@ -112,6 +112,7 @@ export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const { formatCurrency } = useSettings();
   const { t } = useLanguage();
+  const queryClient = useQueryClient();
   const [timers, setTimers] = useState<Record<string, number>>({});
   const [auctionBids, setAuctionBids] = useState<Record<string, Bid[]>>({});
   const [visibleUpcomingCount, setVisibleUpcomingCount] = useState(9);
@@ -142,6 +143,12 @@ export default function Home() {
       });
 
       socketService.onAuctionUpdate((data) => {
+        // **FIX: Refetch auctions when status changes (upcoming → live → finished)**
+        if (data.type === 'auction_started' || data.auction?.status) {
+          console.log('🔄 Auction status changed, refetching auctions list');
+          queryClient.invalidateQueries({ queryKey: ["/api/auctions"] });
+        }
+        
         if (data.auction && data.bids) {
           setAuctionBids(prev => ({
             ...prev,
@@ -158,7 +165,7 @@ export default function Home() {
         socketService.offAuctionUpdate();
       };
     }
-  }, [connected]);
+  }, [connected, queryClient]);
 
   const calculateTimeToStart = (startTime: string): number => {
     const start = new Date(startTime).getTime();
