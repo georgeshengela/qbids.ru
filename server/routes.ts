@@ -1106,8 +1106,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const now = new Date();
       const startTime = processedData.startTime;
       
-      // Allow a small grace period (30 seconds) for immediate auctions
-      const gracePeriod = 30 * 1000; // 30 seconds in milliseconds
+      // Allow a generous grace period (7 hours) to handle timezone differences
+      // Server is in Asia/Bishkek (UTC+6), this allows for global timezone flexibility
+      const gracePeriod = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
       if (startTime.getTime() < (now.getTime() - gracePeriod)) {
         return res.status(400).json({ 
           error: "Время начала не может быть в прошлом. Пожалуйста, выберите будущее время." 
@@ -1150,8 +1151,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const now = new Date();
         const startTime = processedData.startTime;
         
-        // Allow a small grace period (30 seconds) for immediate auctions
-        const gracePeriod = 30 * 1000; // 30 seconds in milliseconds
+        // Allow a generous grace period (7 hours) to handle timezone differences
+        // Server is in Asia/Bishkek (UTC+6), this allows for global timezone flexibility
+        const gracePeriod = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
         if (startTime.getTime() < (now.getTime() - gracePeriod)) {
           return res.status(400).json({ 
             error: "Время начала не может быть в прошлом. Пожалуйста, выберите будущее время." 

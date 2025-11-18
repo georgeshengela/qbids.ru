@@ -3,8 +3,8 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { auctionService } from "./services/auction-service";
 
-// Set timezone to Kyrgyzstan (UTC+6)
-process.env.TZ = 'Asia/Bishkek';
+// Set timezone to Moscow, Russia (UTC+3)
+process.env.TZ = 'Europe/Moscow';
 
 const app = express();
 
@@ -69,14 +69,27 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, async () => {
+  const host = process.env.NODE_ENV === 'development' ? '127.0.0.1' : '0.0.0.0';
+  
+  server.listen(port, host, async () => {
     log(`serving on port ${port}`);
     
-    // Restart live auctions after server startup
-    await auctionService.restartLiveAuctions();
+    // Set server timeouts for production (Render.com compatibility)
+    server.keepAliveTimeout = 65000;
+    server.headersTimeout = 66000;
+    server.requestTimeout = 60000;
+    
+    // Delay auction service startup to allow database connections to stabilize
+    // This is especially important on Render.com where DB may take time to connect
+    setTimeout(async () => {
+      try {
+        log('Starting auction services...');
+        await auctionService.restartLiveAuctions();
+        log('Auction services started successfully');
+      } catch (error) {
+        console.error("Error restarting live auctions:", error);
+        console.error("The server is still running, but auction services may need manual restart");
+      }
+    }, 2000); // Wait 2 seconds after server start
   });
 })();
