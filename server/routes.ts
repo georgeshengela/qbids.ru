@@ -1106,6 +1106,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const now = new Date();
       const startTime = processedData.startTime;
       
+      console.log(`🕐 Auction time validation:
+        Received from client: ${req.body.startTime}
+        Parsed start time: ${startTime.toISOString()} (${startTime.toString()})
+        Server current time: ${now.toISOString()} (${now.toString()})
+        Time difference: ${Math.round((startTime.getTime() - now.getTime()) / 1000)} seconds`);
+      
       // Allow flexible time ranges to handle timezone differences between admin and server
       // Grace period allows times within 12 hours before server time (covers global timezones)
       // Also allows any future time (no upper limit)
@@ -1118,7 +1124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Allow any future time - no upper limit validation needed
+      console.log("✅ Time validation passed");
       
       const auctionData = insertAuctionSchema.parse(processedData);
       console.log("Parsed auction data:", auctionData);

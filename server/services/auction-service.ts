@@ -185,7 +185,18 @@ export class AuctionService {
     const now = new Date();
 
     for (const auction of upcomingAuctions) {
+      // Debug logging to see what's being compared
+      const startTime = new Date(auction.startTime);
+      const timeDiff = (startTime.getTime() - now.getTime()) / 1000; // seconds
+      
+      console.log(`Checking auction ${auction.title}:
+        Start time: ${startTime.toISOString()} (${startTime.toString()})
+        Current time: ${now.toISOString()} (${now.toString()})
+        Time until start: ${Math.round(timeDiff)} seconds
+        Should start: ${auction.startTime <= now}`);
+      
       if (auction.startTime <= now) {
+        console.log(`✅ Starting auction: ${auction.title}`);
         await this.startAuction(auction.id);
       }
     }
