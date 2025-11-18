@@ -319,20 +319,7 @@ export function AdminPanel() {
       return;
     }
 
-    // **FIX #2: Frontend validation - check if start time is in the past**
-    const startTime = new Date(newAuction.startTime);
-    const now = new Date();
-    const gracePeriod = 30 * 1000; // 30 seconds grace period
-    
-    if (startTime.getTime() < (now.getTime() - gracePeriod)) {
-      toast({
-        title: "Ошибка валидации",
-        description: "Время начала не может быть в прошлом. Пожалуйста, выберите будущее время.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+    // No frontend time validation - server will handle it with proper timezone support
     createAuctionMutation.mutate({
       title: newAuction.title,
       description: newAuction.description,
