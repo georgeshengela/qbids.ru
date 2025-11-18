@@ -104,12 +104,13 @@ export function AdminPanel() {
     },
   });
 
+  // **FIX #2: Initialize with default start time (now + 10 minutes)**
   const [newAuction, setNewAuction] = useState({
     title: "",
     description: "",
     imageUrl: "",
     retailPrice: "",
-    startTime: "",
+    startTime: "", // Will be set to default when dialog opens
     isBidPackage: false,
   });
 
@@ -308,6 +309,20 @@ export function AdminPanel() {
       return;
     }
 
+    // **FIX #2: Frontend validation - check if start time is in the past**
+    const startTime = new Date(newAuction.startTime);
+    const now = new Date();
+    const gracePeriod = 30 * 1000; // 30 seconds grace period
+    
+    if (startTime.getTime() < (now.getTime() - gracePeriod)) {
+      toast({
+        title: "Ошибка валидации",
+        description: "Время начала не может быть в прошлом. Пожалуйста, выберите будущее время.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     createAuctionMutation.mutate({
       title: newAuction.title,
       description: newAuction.description,
@@ -395,6 +410,14 @@ export function AdminPanel() {
     return new Date(dateTime).toLocaleString('ru-RU');
   };
 
+  // **FIX #2: Helper to get default start time (now + 10 minutes)**
+  const getDefaultStartTime = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 10); // Add 10 minutes
+    // Format as YYYY-MM-DDTHH:mm for datetime-local input
+    return now.toISOString().slice(0, 16);
+  };
+
   return (
     <div className="space-y-6">
       {/* Admin Navigation */}
@@ -474,7 +497,13 @@ export function AdminPanel() {
               <i className="fas fa-gavel mr-2"></i>
               Управление аукционами
             </CardTitle>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+              setIsCreateDialogOpen(open);
+              // **FIX #2: Set default start time when dialog opens**
+              if (open && !newAuction.startTime) {
+                setNewAuction(prev => ({ ...prev, startTime: getDefaultStartTime() }));
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button className="bg-green-600 hover:bg-green-700 text-white">
                   <i className="fas fa-plus mr-2"></i>
@@ -535,7 +564,11 @@ export function AdminPanel() {
                       type="datetime-local"
                       value={newAuction.startTime}
                       onChange={(e) => setNewAuction({ ...newAuction, startTime: e.target.value })}
+                      min={new Date().toISOString().slice(0, 16)}
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Время должно быть в будущем (рекомендуется +10 минут)
+                    </p>
                   </div>
 
                   <div className="flex items-center space-x-2">
@@ -936,7 +969,11 @@ export function AdminPanel() {
                   type="datetime-local"
                   value={editingAuction.startTime ? new Date(editingAuction.startTime).toISOString().slice(0, 16) : ''}
                   onChange={(e) => setEditingAuction({ ...editingAuction, startTime: e.target.value })}
+                  min={new Date().toISOString().slice(0, 16)}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Время должно быть в будущем
+                </p>
               </div>
 
               <div className="flex items-center space-x-2">

@@ -11,8 +11,9 @@ export class AuctionService {
     // Convert prebids to actual bids when auction starts
     await this.convertPrebidsToBids(auctionId);
     
-    timerService.startAuctionTimer(auctionId);
-    botService.startBotsForAuction(auctionId);
+    // **FIX #1: startAuctionTimer is now async**
+    await timerService.startAuctionTimer(auctionId);
+    await botService.startBotsForAuction(auctionId);
   }
 
   async endAuction(auctionId: string) {
@@ -85,8 +86,8 @@ export class AuctionService {
       broadcastBidBalanceUpdate(userId, updatedUser.bidBalance);
     }
 
-    // Reset auction timer
-    timerService.resetAuctionTimer(auctionId);
+    // **FIX #1: resetAuctionTimer is now async**
+    await timerService.resetAuctionTimer(auctionId);
 
     // Broadcast real-time update
     const updatedBids = await storage.getBidsForAuction(auctionId);
@@ -119,8 +120,8 @@ export class AuctionService {
     await storage.updateAuctionPrice(auctionId, newPrice);
     await storage.updateAuctionBotBidCount(auctionId, botId);
 
-    // Reset auction timer
-    timerService.resetAuctionTimer(auctionId);
+    // **FIX #1: resetAuctionTimer is now async**
+    await timerService.resetAuctionTimer(auctionId);
 
     // Broadcast real-time update for bot bid
     const updatedBids = await storage.getBidsForAuction(auctionId);
@@ -196,8 +197,9 @@ export class AuctionService {
     
     for (const auction of liveAuctions) {
       console.log(`Restarting live auction: ${auction.title} (${auction.id})`);
-      timerService.startAuctionTimer(auction.id);
-      botService.startBotsForAuction(auction.id);
+      // **FIX #1: startAuctionTimer is now async**
+      await timerService.startAuctionTimer(auction.id);
+      await botService.startBotsForAuction(auction.id);
     }
     
     console.log(`Restarted ${liveAuctions.length} live auctions`);

@@ -1,6 +1,7 @@
 import { auctionService } from "./auction-service";
 import { botService } from "./bot-service";
 import { broadcastAuctionUpdate } from "../socket";
+import { storage } from "../storage";
 
 interface AuctionTimer {
   auctionId: string;
@@ -11,12 +12,27 @@ interface AuctionTimer {
 export class TimerService {
   private timers = new Map<string, AuctionTimer>();
 
-  startAuctionTimer(auctionId: string, seconds = 10) {
+  async startAuctionTimer(auctionId: string, seconds?: number) {
     this.stopAuctionTimer(auctionId);
+
+    // **FIX #1: Fetch auction's actual timerSeconds from database**
+    // If seconds not provided, get it from the auction record
+    let timerDuration = seconds;
+    if (timerDuration === undefined) {
+      const auction = await storage.getAuction(auctionId);
+      if (!auction) {
+        console.error(`Cannot start timer: Auction ${auctionId} not found`);
+        return;
+      }
+      timerDuration = auction.timerSeconds;
+      console.log(`Starting auction ${auctionId} with ${timerDuration}s timer (from database)`);
+    } else {
+      console.log(`Starting auction ${auctionId} with ${timerDuration}s timer (override)`);
+    }
 
     const timer: AuctionTimer = {
       auctionId,
-      timeLeft: seconds,
+      timeLeft: timerDuration,
       interval: setInterval(async () => {
         timer.timeLeft--;
         
@@ -42,13 +58,25 @@ export class TimerService {
     this.timers.set(auctionId, timer);
   }
 
-  resetAuctionTimer(auctionId: string, seconds = 10) {
+  async resetAuctionTimer(auctionId: string, seconds?: number) {
     const timer = this.timers.get(auctionId);
+    
+    // **FIX #1 (continued): Use auction's timerSeconds when resetting**
+    let timerDuration = seconds;
+    if (timerDuration === undefined) {
+      const auction = await storage.getAuction(auctionId);
+      if (auction) {
+        timerDuration = auction.timerSeconds;
+      } else {
+        timerDuration = 10; // Fallback to 10 if auction not found
+      }
+    }
+    
     if (timer) {
-      timer.timeLeft = seconds;
+      timer.timeLeft = timerDuration;
     } else {
       // If no timer exists, start a new one
-      this.startAuctionTimer(auctionId, seconds);
+      await this.startAuctionTimer(auctionId, timerDuration);
     }
   }
 
