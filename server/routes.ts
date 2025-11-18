@@ -1102,18 +1102,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         startTime: new Date(req.body.startTime)
       };
       
-      // **FIX #2: Validate that startTime is not in the past**
+      // **FIX #2: Validate that startTime is not too far in the past**
       const now = new Date();
       const startTime = processedData.startTime;
       
-      // Allow a generous grace period (7 hours) to handle timezone differences
-      // Server is in Asia/Bishkek (UTC+6), this allows for global timezone flexibility
-      const gracePeriod = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
+      // Allow flexible time ranges to handle timezone differences between admin and server
+      // Grace period allows times within 12 hours before server time (covers global timezones)
+      // Also allows any future time (no upper limit)
+      const gracePeriod = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+      
+      // Only reject if more than 12 hours in the past (truly old times)
       if (startTime.getTime() < (now.getTime() - gracePeriod)) {
         return res.status(400).json({ 
-          error: "Время начала не может быть в прошлом. Пожалуйста, выберите будущее время." 
+          error: "Время начала слишком далеко в прошлом. Пожалуйста, выберите актуальное время." 
         });
       }
+      
+      // Allow any future time - no upper limit validation needed
       
       const auctionData = insertAuctionSchema.parse(processedData);
       console.log("Parsed auction data:", auctionData);
@@ -1147,18 +1152,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.body.startTime !== undefined) {
         processedData.startTime = new Date(req.body.startTime);
         
-        // **FIX #2: Validate that startTime is not in the past (for updates too)**
+        // **FIX #2: Validate that startTime is not too far in the past (for updates too)**
         const now = new Date();
         const startTime = processedData.startTime;
         
-        // Allow a generous grace period (7 hours) to handle timezone differences
-        // Server is in Asia/Bishkek (UTC+6), this allows for global timezone flexibility
-        const gracePeriod = 7 * 60 * 60 * 1000; // 7 hours in milliseconds
+        // Allow flexible time ranges to handle timezone differences between admin and server
+        // Grace period allows times within 12 hours before server time (covers global timezones)
+        // Also allows any future time (no upper limit)
+        const gracePeriod = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+        
+        // Only reject if more than 12 hours in the past (truly old times)
         if (startTime.getTime() < (now.getTime() - gracePeriod)) {
           return res.status(400).json({ 
-            error: "Время начала не может быть в прошлом. Пожалуйста, выберите будущее время." 
+            error: "Время начала слишком далеко в прошлом. Пожалуйста, выберите актуальное время." 
           });
         }
+        
+        // Allow any future time - no upper limit validation needed
       }
       
       const auctionData = insertAuctionSchema.partial().parse(processedData);
