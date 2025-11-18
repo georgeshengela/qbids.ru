@@ -17,6 +17,16 @@ import { useSettings } from "@/hooks/use-settings";
 import { useLanguage } from "@/hooks/use-language";
 import type { BotSettings, Auction, Bot, AuctionBot } from "@/types/auction";
 
+// Type for bot with auction status
+interface BotWithAuctionStatus extends Bot {
+  currentAuctions?: Array<{
+    auctionId: string;
+    auctionTitle: string;
+    bidLimit: number;
+    currentBids: number;
+  }>;
+}
+
 // Name data for bot generator
 const MALE_NAMES = [
   "Aibek Toktomamatov", "Bakytbek Ismailov", "Cholponbek Kudaiberdiev", "Emilbek Abdykadyrov",
@@ -85,7 +95,7 @@ export function AdminPanel() {
   });
 
   // Query to get all bots with their auction associations to show conflicts
-  const { data: allBotsWithAuctions = [] } = useQuery({
+  const { data: allBotsWithAuctions = [] } = useQuery<BotWithAuctionStatus[]>({
     queryKey: ["/api/admin/bots/auction-status"],
     enabled: isEditDialogOpen || isAuctionBotDialogOpen,
   });
@@ -328,7 +338,7 @@ export function AdminPanel() {
       description: newAuction.description,
       imageUrl: newAuction.imageUrl,
       retailPrice: parseFloat(newAuction.retailPrice),
-      startTime: newAuction.startTime,
+      startTime: datetimeLocalToISO(newAuction.startTime), // Convert to ISO for server
       isBidPackage: newAuction.isBidPackage,
     });
   };
@@ -379,7 +389,7 @@ export function AdminPanel() {
         description: editingAuction.description,
         imageUrl: editingAuction.imageUrl,
         retailPrice: typeof editingAuction.retailPrice === 'string' ? parseFloat(editingAuction.retailPrice) : editingAuction.retailPrice,
-        startTime: editingAuction.startTime,
+        startTime: datetimeLocalToISO(editingAuction.startTime), // Convert to ISO for server
       },
     });
   };
@@ -410,12 +420,43 @@ export function AdminPanel() {
     return new Date(dateTime).toLocaleString('ru-RU');
   };
 
-  // **FIX #2: Helper to get default start time (now + 10 minutes)**
+  // **FIX #2: Helper to get default start time (user's local time + 10 minutes)**
   const getDefaultStartTime = () => {
+    // Get current time in user's local timezone
     const now = new Date();
     now.setMinutes(now.getMinutes() + 10); // Add 10 minutes
+    
     // Format as YYYY-MM-DDTHH:mm for datetime-local input
-    return now.toISOString().slice(0, 16);
+    // This format is interpreted as local time by the browser
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  // Helper to convert datetime-local value to ISO string for server
+  const datetimeLocalToISO = (datetimeLocal: string): string => {
+    // datetime-local is in format YYYY-MM-DDTHH:mm
+    // Create a Date object which interprets it as local time
+    const date = new Date(datetimeLocal);
+    // Convert to ISO string for server (UTC)
+    return date.toISOString();
+  };
+
+  // Helper to convert ISO string to datetime-local value
+  const isoToDatetimeLocal = (isoString: string): string => {
+    const date = new Date(isoString);
+    // Format for datetime-local input (local time)
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   return (
@@ -499,8 +540,8 @@ export function AdminPanel() {
             </CardTitle>
             <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
               setIsCreateDialogOpen(open);
-              // **FIX #2: Set default start time when dialog opens**
-              if (open && !newAuction.startTime) {
+              // **FIX #2: Always set Moscow time + 10 minutes when dialog opens**
+              if (open) {
                 setNewAuction(prev => ({ ...prev, startTime: getDefaultStartTime() }));
               }
             }}>
@@ -564,10 +605,10 @@ export function AdminPanel() {
                       type="datetime-local"
                       value={newAuction.startTime}
                       onChange={(e) => setNewAuction({ ...newAuction, startTime: e.target.value })}
-                      min={new Date().toISOString().slice(0, 16)}
+                      min={getDefaultStartTime()}
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Время должно быть в будущем (рекомендуется +10 минут)
+                      Время в вашем местном часовом поясе (рекомендуется +10 минут от текущего времени)
                     </p>
                   </div>
 
@@ -967,12 +1008,12 @@ export function AdminPanel() {
                 <Input
                   id="edit-startTime"
                   type="datetime-local"
-                  value={editingAuction.startTime ? new Date(editingAuction.startTime).toISOString().slice(0, 16) : ''}
+                  value={editingAuction.startTime ? isoToDatetimeLocal(editingAuction.startTime) : ''}
                   onChange={(e) => setEditingAuction({ ...editingAuction, startTime: e.target.value })}
-                  min={new Date().toISOString().slice(0, 16)}
+                  min={getDefaultStartTime()}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Время должно быть в будущем
+                  Время должно быть в будущем (отображается в вашем местном времени)
                 </p>
               </div>
 
@@ -1057,9 +1098,9 @@ export function AdminPanel() {
                           const isInCurrentAuction = auctionBots.some(ab => ab.botId === bot.id);
                           
                           // Check if bot is in other live auctions
-                          const botWithStatus = allBotsWithAuctions.find(b => b.id === bot.id);
+                          const botWithStatus = allBotsWithAuctions.find((b: BotWithAuctionStatus) => b.id === bot.id);
                           const otherLiveAuctions = botWithStatus?.currentAuctions?.filter(
-                            auction => auction.auctionId !== editingAuction?.id
+                            (auction: { auctionId: string; auctionTitle: string; bidLimit: number; currentBids: number }) => auction.auctionId !== editingAuction?.id
                           ) || [];
                           
                           return (
@@ -1089,7 +1130,7 @@ export function AdminPanel() {
                                 </div>
                                 {otherLiveAuctions.length > 0 && (
                                   <div className="text-xs text-gray-500 mt-1">
-                                    Активен в: {otherLiveAuctions.map(a => a.auctionTitle).join(', ')}
+                                    Активен в: {otherLiveAuctions.map((a: { auctionTitle: string }) => a.auctionTitle).join(', ')}
                                   </div>
                                 )}
                               </div>
@@ -1341,7 +1382,7 @@ export function AdminPanel() {
                       const paginatedBots = allBots.slice(startIndex, endIndex);
                       
                       return paginatedBots.map((bot) => {
-                        const botWithStatus = allBotsWithAuctions.find(b => b.id === bot.id);
+                        const botWithStatus = allBotsWithAuctions.find((b: BotWithAuctionStatus) => b.id === bot.id);
                         const currentAuctions = botWithStatus?.currentAuctions || [];
                         
                         return (
@@ -1368,7 +1409,7 @@ export function AdminPanel() {
                             <TableCell>
                               {currentAuctions.length > 0 ? (
                                 <div className="space-y-1">
-                                  {currentAuctions.map((auction, index) => (
+                                  {currentAuctions.map((auction: { auctionId: string; auctionTitle: string; bidLimit: number; currentBids: number }, index: number) => (
                                     <div key={index} className="flex items-center gap-2">
                                       <Badge variant="outline" className="text-xs">
                                         {auction.auctionTitle}
