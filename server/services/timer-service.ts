@@ -50,7 +50,8 @@ export class TimerService {
         if (timer.timeLeft <= 0) {
           this.stopAuctionTimer(auctionId);
           await botService.stopBotsForAuction(auctionId);
-          auctionService.endAuction(auctionId);
+          await auctionService.endAuction(auctionId);
+          console.log(`⏱️ Timer reached 0, auction ${auctionId} ended`);
         }
       }, 1000),
     };

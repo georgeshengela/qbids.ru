@@ -6,6 +6,8 @@ import type { Auction, InsertBid } from "@shared/schema";
 
 export class AuctionService {
   async startAuction(auctionId: string) {
+    console.log(`🚀 Starting auction: ${auctionId}`);
+    
     await storage.updateAuctionStatus(auctionId, "live");
     
     // Convert prebids to actual bids when auction starts
@@ -14,6 +16,18 @@ export class AuctionService {
     // **FIX #1: startAuctionTimer is now async**
     await timerService.startAuctionTimer(auctionId);
     await botService.startBotsForAuction(auctionId);
+    
+    // **FIX: Broadcast auction start to all clients**
+    const updatedAuction = await storage.getAuction(auctionId);
+    const bids = await storage.getBidsForAuction(auctionId);
+    if (updatedAuction) {
+      broadcastAuctionUpdate(auctionId, { 
+        auction: updatedAuction, 
+        bids: bids.slice(0, 5),
+        type: 'auction_started'
+      });
+      console.log(`✅ Broadcasted auction start for: ${updatedAuction.title}`);
+    }
   }
 
   async endAuction(auctionId: string) {
