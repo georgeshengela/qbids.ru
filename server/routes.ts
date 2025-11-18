@@ -1102,6 +1102,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         startTime: new Date(req.body.startTime)
       };
       
+      // **FIX #2: Validate that startTime is not in the past**
+      const now = new Date();
+      const startTime = processedData.startTime;
+      
+      // Allow a small grace period (30 seconds) for immediate auctions
+      const gracePeriod = 30 * 1000; // 30 seconds in milliseconds
+      if (startTime.getTime() < (now.getTime() - gracePeriod)) {
+        return res.status(400).json({ 
+          error: "Время начала не может быть в прошлом. Пожалуйста, выберите будущее время." 
+        });
+      }
+      
       const auctionData = insertAuctionSchema.parse(processedData);
       console.log("Parsed auction data:", auctionData);
       const auction = await storage.createAuction(auctionData);
@@ -1125,6 +1137,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       if (req.body.startTime !== undefined) {
         processedData.startTime = new Date(req.body.startTime);
+        
+        // **FIX #2: Validate that startTime is not in the past (for updates too)**
+        const now = new Date();
+        const startTime = processedData.startTime;
+        
+        // Allow a small grace period (30 seconds) for immediate auctions
+        const gracePeriod = 30 * 1000; // 30 seconds in milliseconds
+        if (startTime.getTime() < (now.getTime() - gracePeriod)) {
+          return res.status(400).json({ 
+            error: "Время начала не может быть в прошлом. Пожалуйста, выберите будущее время." 
+          });
+        }
       }
       
       const auctionData = insertAuctionSchema.partial().parse(processedData);
