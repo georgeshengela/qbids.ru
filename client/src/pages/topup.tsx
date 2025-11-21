@@ -12,54 +12,54 @@ import goldBagImage from '@assets/img_1755139968219.png';
 const bidPackages = [
   {
     id: 1,
-    title: "50 ставок",
+    title: '50 ставок',
     bids: 50,
     price: 750,
     originalPrice: 1000,
     savings: 250,
     popular: false,
-    description: "Идеально для начинающих"
+    description: 'Идеально для начинающих',
   },
   {
     id: 2,
-    title: "100 ставок",
+    title: '100 ставок',
     bids: 100,
     price: 1500,
     originalPrice: 2000,
     savings: 500,
     popular: false,
-    description: "Для активных участников"
+    description: 'Для активных участников',
   },
   {
     id: 3,
-    title: "250 ставок",
+    title: '250 ставок',
     bids: 250,
     price: 3750,
     originalPrice: 5000,
     savings: 1250,
     popular: true,
-    description: "Самый выгодный выбор"
+    description: 'Самый выгодный выбор',
   },
   {
     id: 4,
-    title: "500 ставок",
+    title: '500 ставок',
     bids: 500,
     price: 7500,
     originalPrice: 10000,
     savings: 2500,
     popular: false,
-    description: "Для профессионалов"
+    description: 'Для профессионалов',
   },
   {
     id: 5,
-    title: "1000 ставок",
+    title: '1000 ставок',
     bids: 1000,
     price: 15000,
     originalPrice: 20000,
     savings: 5000,
     popular: false,
-    description: "Максимальный пакет"
-  }
+    description: 'Максимальный пакет',
+  },
 ];
 
 export default function TopUp() {
@@ -71,7 +71,7 @@ export default function TopUp() {
   useEffect(() => {
     // Set page title
     document.title = `${t('topUpBalance')} - QBIDS.RU`;
-    
+
     // Set viewport meta tag
     const viewportMeta = document.querySelector('meta[name="viewport"]');
     if (!viewportMeta) {
@@ -80,11 +80,14 @@ export default function TopUp() {
       meta.content = 'width=device-width, initial-scale=1';
       document.head.appendChild(meta);
     }
-    
+
     // Set description meta tag
     const descriptionMeta = document.querySelector('meta[name="description"]');
     if (descriptionMeta) {
-      descriptionMeta.setAttribute('content', 'Пополните баланс для участия в аукционах QBIDS.KG');
+      descriptionMeta.setAttribute(
+        'content',
+        'Пополните баланс для участия в аукционах QBIDS.KG'
+      );
     } else {
       const meta = document.createElement('meta');
       meta.name = 'description';
@@ -97,16 +100,16 @@ export default function TopUp() {
     // Check if user is logged in
     if (!user) {
       toast({
-        title: "Необходима авторизация",
-        description: "Пожалуйста, войдите в систему для пополнения баланса",
-        variant: "destructive",
+        title: 'Необходима авторизация',
+        description: 'Пожалуйста, войдите в систему для пополнения баланса',
+        variant: 'destructive',
       });
       navigate('/login');
       return;
     }
 
     // Find the package
-    const selectedPackage = bidPackages.find(pkg => pkg.id === packageId);
+    const selectedPackage = bidPackages.find((pkg) => pkg.id === packageId);
     if (selectedPackage) {
       // Track the purchase initiation
       trackTopUp(selectedPackage.price);
@@ -118,28 +121,29 @@ export default function TopUp() {
       2: 'https://oplata.info/asp2/pay_wm.asp?id_d=5487610&lang=ru-RU',
       3: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355203&lang=ru-RU',
       4: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355213&lang=ru-RU',
-      5: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355214&lang=ru-RU'
+      5: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355214&lang=ru-RU',
     };
 
     const baseUrl = basePaymentUrls[packageId];
     if (baseUrl) {
       // Add user ID as custom parameter - Digiseller will pass it back in Through parameter
       const paymentUrl = `${baseUrl}&userid=${user.id}`;
-      
+
       // Open Digiseller payment page in new tab
       window.open(paymentUrl, '_blank', 'noopener,noreferrer');
-      
+
       // Show info message
       toast({
-        title: "Платежная страница открыта",
-        description: "После оплаты обновите баланс через профиль или обратитесь в поддержку",
+        title: 'Платежная страница открыта',
+        description:
+          'После оплаты обновите баланс через профиль или обратитесь в поддержку',
         duration: 7000,
       });
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return `${amount.toLocaleString()} сом`;
+    return `${amount.toLocaleString()} ₽`;
   };
 
   return (
@@ -159,11 +163,11 @@ export default function TopUp() {
         {/* Bid Packages Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-12">
           {bidPackages.map((pkg) => (
-            <div 
-              key={pkg.id} 
+            <div
+              key={pkg.id}
               className={`relative bg-white rounded-3xl shadow-xl border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
-                pkg.popular 
-                  ? 'border-gradient-to-r from-yellow-400 to-amber-500 ring-4 ring-yellow-100' 
+                pkg.popular
+                  ? 'border-gradient-to-r from-yellow-400 to-amber-500 ring-4 ring-yellow-100'
                   : 'border-slate-200 hover:border-blue-300'
               }`}
             >
@@ -180,7 +184,7 @@ export default function TopUp() {
               <div className="p-6">
                 {/* Gold Coins Bag Image */}
                 <div className="w-24 h-24 mx-auto mb-6 relative">
-                  <img 
+                  <img
                     src={goldBagImage}
                     alt="Gold coins bag"
                     className="w-full h-full object-contain"
@@ -221,11 +225,11 @@ export default function TopUp() {
                 </div>
 
                 {/* Buy Button */}
-                <Button 
+                <Button
                   onClick={() => handleBuyPackage(pkg.id)}
                   className={`w-full h-12 rounded-xl font-semibold transition-all duration-200 ${
-                    pkg.popular 
-                      ? 'bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white shadow-lg' 
+                    pkg.popular
+                      ? 'bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white shadow-lg'
                       : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg'
                   }`}
                 >
@@ -243,24 +247,38 @@ export default function TopUp() {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fas fa-shield-alt text-green-600 text-2xl"></i>
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">Безопасная оплата</h3>
-            <p className="text-slate-600">Все платежи защищены SSL шифрованием и проходят через надежную платежную систему</p>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              Безопасная оплата
+            </h3>
+            <p className="text-slate-600">
+              Все платежи защищены SSL шифрованием и проходят через надежную
+              платежную систему
+            </p>
           </div>
 
           <div className="text-center">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fas fa-bolt text-blue-600 text-2xl"></i>
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">Мгновенное зачисление</h3>
-            <p className="text-slate-600">Биды поступят на ваш счет автоматически сразу после успешной оплаты</p>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              Мгновенное зачисление
+            </h3>
+            <p className="text-slate-600">
+              Биды поступят на ваш счет автоматически сразу после успешной
+              оплаты
+            </p>
           </div>
 
           <div className="text-center">
             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <i className="fas fa-headset text-purple-600 text-2xl"></i>
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">Поддержка 24/7</h3>
-            <p className="text-slate-600">Наша команда поддержки готова помочь вам в любое время дня и ночи</p>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              Поддержка 24/7
+            </h3>
+            <p className="text-slate-600">
+              Наша команда поддержки готова помочь вам в любое время дня и ночи
+            </p>
           </div>
         </div>
 
@@ -274,22 +292,35 @@ export default function TopUp() {
               <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
                 1
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">Выберите пакет</h3>
-              <p className="text-slate-600">Выберите подходящий пакет бидов из представленных выше</p>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                Выберите пакет
+              </h3>
+              <p className="text-slate-600">
+                Выберите подходящий пакет бидов из представленных выше
+              </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
                 2
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">Оплатите покупку</h3>
-              <p className="text-slate-600">Безопасно оплатите выбранный пакет любым удобным способом</p>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                Оплатите покупку
+              </h3>
+              <p className="text-slate-600">
+                Безопасно оплатите выбранный пакет любым удобным способом
+              </p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-lg">
                 3
               </div>
-              <h3 className="text-lg font-semibold text-slate-900 mb-2">Начните участвовать</h3>
-              <p className="text-slate-600">Биды автоматически зачислятся и вы сможете участвовать в аукционах</p>
+              <h3 className="text-lg font-semibold text-slate-900 mb-2">
+                Начните участвовать
+              </h3>
+              <p className="text-slate-600">
+                Биды автоматически зачислятся и вы сможете участвовать в
+                аукционах
+              </p>
             </div>
           </div>
         </div>
