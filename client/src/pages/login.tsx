@@ -75,8 +75,8 @@ export default function Login() {
 
     try {
       await register({
-        username: registerForm.username,
-        email: registerForm.email,
+        username: registerForm.username.toLowerCase(),
+        email: registerForm.email.toLowerCase(),
         password: registerForm.password,
       });
       toast({
@@ -125,7 +125,7 @@ export default function Login() {
                       id="login-username"
                       type="text"
                       value={loginForm.username}
-                      onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
+                      onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value.toLowerCase() })}
                       placeholder="Введите имя пользователя"
                       required
                     />
