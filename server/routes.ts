@@ -105,11 +105,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Map package IDs to Digiseller product IDs (UPDATED to match frontend URLs)
       const productIdMap: { [key: number]: string } = {
-        1: "5484776",  // 50 bids
+        1: "5551468",  // 50 bids
         2: "5487610",  // 100 bids (FIXED!)
-        3: "5355203",  // 250 bids
-        4: "5355213",  // 500 bids
-        5: "5355214"   // 1000 bids
+        3: "5551475",  // 250 bids
+        4: "5551477",  // 500 bids
+        5: "5551512"   // 1000 bids
       };
 
       const digisellerProductId = productIdMap[packageId];
@@ -129,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userEmail: user.email || undefined,
         digisellerProductId: digisellerProductId,
         amount: amount.toString(),
-        currency: "KGS",
+        currency: "RUB",
         bidsAmount: bidsAmount,
         status: "pending"
       });
@@ -266,8 +266,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         "5484776": { bids: 50, price: 750 },    // Package 1 - 50 bids
         "5487610": { bids: 100, price: 1500 },  // Package 2 - 100 bids (FIXED!)
         "5355203": { bids: 250, price: 3750 },  // Package 3 - 250 bids 
-        "5355213": { bids: 500, price: 7500 },  // Package 4 - 500 bids
-        "5355214": { bids: 1000, price: 15000 } // Package 5 - 1000 bids
+        "5551477": { bids: 500, price: 10000 }, // Package 4 - 500 bids (Updated to match Digiseller)
+        "5551512": { bids: 1000, price: 20000 } // Package 5 - 1000 bids (Updated to match Digiseller)
       };
 
       console.log("🗂️ Available product IDs:", Object.keys(bidPackages));
@@ -572,7 +572,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword,
         dateOfBirth: registerData.dateOfBirth ? new Date(registerData.dateOfBirth) : undefined,
         gender: registerData.gender,
-        bidBalance: 5, // Starting bid balance
+        bidBalance: 0, // Starting bid balance
         role: "user",
         ipAddress: ipAddress,
       });

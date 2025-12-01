@@ -66,14 +66,14 @@ export function Header() {
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-2xl font-bold text-slate-900">
-                  {settings?.siteName || "QBIDS.KG"}
+                  {settings?.siteName || "QBIDS.ru"}
                 </h1>
                 <p className="text-xs text-slate-600">
-                  {settings?.headerTagline || "Пенни-аукционы в Кыргызстане"}
+                  {settings?.headerTagline || "Пенни-аукционы в России"}
                 </p>
               </div>
               <div className="sm:hidden">
-                <h1 className="text-xl font-bold text-slate-900">{settings?.siteName || "QBIDS.KG"}</h1>
+                <h1 className="text-xl font-bold text-slate-900">{settings?.siteName || "QBIDS.ru"}</h1>
               </div>
             </Link>
 
@@ -186,10 +186,9 @@ export function Header() {
                       <div>
                         <SheetTitle className="text-slate-900 text-xl font-bold">{settings?.siteName || "QBIDS.KG"}</SheetTitle>
                         <p className="text-slate-600 text-sm">
-                          {settings?.language === "ru" && "Пенни-аукционы"}
-                          {settings?.language === "en" && "Penny Auctions"}
-                          {settings?.language === "ka" && "პენი აუქციონები"}
-                          {!settings?.language && "Пенни-аукционы"}
+                          {settings?.language === "ru" && "Пенни-аукционы в России"}
+                          {settings?.language === "en" && "Penny Auctions in Russia"}
+                          {!settings?.language && "Пенни-аукционы в России"}
                         </p>
                       </div>
                     </div>
@@ -239,13 +238,11 @@ export function Header() {
                           <h3 className="font-semibold text-slate-900 mb-2">
                             {settings?.language === "ru" && "Добро пожаловать!"}
                             {settings?.language === "en" && "Welcome!"}
-                            {settings?.language === "ka" && "კეთილი იყოს თქვენი მობრძანება!"}
                             {!settings?.language && "Добро пожаловать!"}
                           </h3>
                           <p className="text-sm text-slate-600 mb-4">
                             {settings?.language === "ru" && "Войдите, чтобы начать участвовать в аукционах"}
                             {settings?.language === "en" && "Login to start participating in auctions"}
-                            {settings?.language === "ka" && "შედით აუქციონებში მონაწილეობისთვის"}
                             {!settings?.language && "Войдите, чтобы начать участвовать в аукционах"}
                           </p>
                           <Button 

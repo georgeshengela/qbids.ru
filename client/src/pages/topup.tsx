@@ -14,7 +14,7 @@ const bidPackages = [
     id: 1,
     title: '50 ставок',
     bids: 50,
-    price: 750,
+    price: 1000,
     originalPrice: 1000,
     savings: 250,
     popular: false,
@@ -24,7 +24,7 @@ const bidPackages = [
     id: 2,
     title: '100 ставок',
     bids: 100,
-    price: 1500,
+    price: 2000,
     originalPrice: 2000,
     savings: 500,
     popular: false,
@@ -34,7 +34,7 @@ const bidPackages = [
     id: 3,
     title: '250 ставок',
     bids: 250,
-    price: 3750,
+    price: 5000,
     originalPrice: 5000,
     savings: 1250,
     popular: true,
@@ -44,9 +44,9 @@ const bidPackages = [
     id: 4,
     title: '500 ставок',
     bids: 500,
-    price: 7500,
+    price: 10000,
     originalPrice: 10000,
-    savings: 2500,
+    savings: 0,
     popular: false,
     description: 'Для профессионалов',
   },
@@ -54,9 +54,9 @@ const bidPackages = [
     id: 5,
     title: '1000 ставок',
     bids: 1000,
-    price: 15000,
+    price: 20000,
     originalPrice: 20000,
-    savings: 5000,
+    savings: 0,
     popular: false,
     description: 'Максимальный пакет',
   },
@@ -117,11 +117,11 @@ export default function TopUp() {
 
     // Static Digiseller payment URLs with user ID passed as parameter
     const basePaymentUrls: { [key: number]: string } = {
-      1: 'https://oplata.info/asp2/pay_wm.asp?id_d=5484776&lang=ru-RU',
+      1: 'https://oplata.info/asp2/pay_wm.asp?id_d=5551468&lang=ru-RU',
       2: 'https://oplata.info/asp2/pay_wm.asp?id_d=5487610&lang=ru-RU',
-      3: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355203&lang=ru-RU',
-      4: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355213&lang=ru-RU',
-      5: 'https://oplata.info/asp2/pay_wm.asp?id_d=5355214&lang=ru-RU',
+      3: 'https://oplata.info/asp2/pay_wm.asp?id_d=5551475&lang=ru-RU',
+      4: 'https://oplata.info/asp2/pay_wm.asp?id_d=5551477&lang=ru-RU',
+      5: 'https://oplata.info/asp2/pay_wm.asp?id_d=5551512&lang=ru-RU',
     };
 
     const baseUrl = basePaymentUrls[packageId];
@@ -216,12 +216,18 @@ export default function TopUp() {
                   <div className="text-2xl font-bold text-slate-900 mb-1">
                     {formatCurrency(pkg.price)}
                   </div>
-                  <div className="text-sm text-slate-400 line-through">
-                    {formatCurrency(pkg.originalPrice)}
-                  </div>
-                  <div className="inline-block bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold mt-2">
-                    Экономия {formatCurrency(pkg.savings)}
-                  </div>
+                  {pkg.originalPrice > pkg.price && (
+                    <>
+                      <div className="text-sm text-slate-400 line-through">
+                        {formatCurrency(pkg.originalPrice)}
+                      </div>
+                      {pkg.savings > 0 && (
+                        <div className="inline-block bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold mt-2">
+                          Экономия {formatCurrency(pkg.savings)}
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
 
                 {/* Buy Button */}
