@@ -148,8 +148,6 @@
     fbq('init', '1234567890');
     fbq('track', 'PageView');
   </script>
-  <noscript><img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=1234567890&ev=PageView&noscript=1" /></noscript>
 
   <!-- Preconnect for Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -191,6 +189,10 @@
 </head>
 
 <body>
+  <!-- Facebook Pixel Noscript -->
+  <noscript><img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=1234567890&ev=PageView&noscript=1" /></noscript>
+
   <!-- Main App Container -->
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
