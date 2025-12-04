@@ -18,8 +18,8 @@ export function useSettings() {
     currencySymbol: "сом", 
     siteName: "QBIDS.KG", 
     language: "ru",
-    headerTagline: "Пенни-аукционы в Кыргызстане",
-    footerDescription: "Первая пенни-аукционная платформа в Кыргызстане. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов."
+    headerTagline: "Пенни-аукционы в Росии",
+    footerDescription: "Первая пенни-аукционная платформа в Росии. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов."
   };
   const currentSettings = settings || defaultSettings;
 

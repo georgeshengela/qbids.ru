@@ -71,8 +71,8 @@ export default function AdminSettings() {
       currencySymbol: settings?.currencySymbol || "сом",
       siteName: settings?.siteName || "QBIDS.KG",
       language: settings?.language || "ru",
-      headerTagline: settings?.headerTagline || "Пенни-аукционы в Кыргызстане",
-      footerDescription: settings?.footerDescription || "Первая пенни-аукционная платформа в Кыргызстане. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов.",
+      headerTagline: settings?.headerTagline || "Пенни-аукционы в Росии",
+      footerDescription: settings?.footerDescription || "Первая пенни-аукционная платформа в Росии. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов.",
       contactAddress: settings?.contactAddress || "г. Бишкек, ул. Чуй 154",
       contactPhone: settings?.contactPhone || "+996 (555) 123-456",
       contactEmail: settings?.contactEmail || "info@qbids.kg",
@@ -281,7 +281,7 @@ export default function AdminSettings() {
                         id="headerTagline"
                         {...form.register("headerTagline")}
                         className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
-                        placeholder="Пенни-аукционы в Кыргызстане"
+                        placeholder="Пенни-аукционы в Росии"
                       />
                       <p className="text-xs text-slate-500">Текст, который отображается под логотипом в шапке сайта</p>
                     </div>
@@ -294,7 +294,7 @@ export default function AdminSettings() {
                         id="footerDescription"
                         {...form.register("footerDescription")}
                         className="min-h-[80px] w-full px-3 py-2 border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                        placeholder="Первая пенни-аукционная платформа в Кыргызстане. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов."
+                        placeholder="Первая пенни-аукционная платформа в Росии. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов."
                         rows={3}
                       />
                       <p className="text-xs text-slate-500">Описание компании, которое отображается в подвале сайта</p>
