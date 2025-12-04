@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSocket } from "@/hooks/use-socket";
 import { useAuth } from "@/hooks/use-auth";
-import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useSettings } from "@/hooks/use-settings";
 import { useLanguage } from "@/hooks/use-language";
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
 import { AuctionCard } from "@/components/auction-card";
 import { UpcomingAuctionCard } from "@/components/upcoming-auction-card";
+import { PageSEO } from "@/components/seo";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { socketService } from "@/lib/socket";
@@ -106,8 +106,6 @@ function HeroSection({ isAuthenticated }: { isAuthenticated: boolean }) {
 }
 
 export default function Home() {
-  useDocumentTitle("QBIDS.RU - №1 Пенни-аукционы в России | Выиграй iPhone за копейки");
-  
   const { connected } = useSocket();
   const { user, isAuthenticated } = useAuth();
   const { formatCurrency } = useSettings();
@@ -185,8 +183,9 @@ export default function Home() {
 
   return (
     <div className="bg-gray-50">
+      <PageSEO page="home" />
       <Header />
-      
+
       {/* Hero Section */}
       <HeroSection isAuthenticated={isAuthenticated} />
 

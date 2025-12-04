@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useLanguage } from "@/hooks/use-language";
 import { useSocket } from "@/hooks/use-socket";
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
 import { UpcomingAuctionCard } from "@/components/upcoming-auction-card";
+import { PageSEO } from "@/components/seo";
 import { Button } from "@/components/ui/button";
 import { socketService } from "@/lib/socket";
 import type { Auction } from "@/types/auction";
@@ -14,8 +14,6 @@ export default function Auctions() {
   const [timers, setTimers] = useState<Record<string, number>>({});
   const { t } = useLanguage();
   const { connected } = useSocket();
-
-  useDocumentTitle(`${t("upcomingAuctions")} - QBIDS.KG | Скоро начнутся новые торги`);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const auctionsPerPage = 12;
@@ -124,8 +122,9 @@ export default function Auctions() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageSEO page="auctions" />
       <Header />
-      
+
       <main className="max-w-[1504px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 relative">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">

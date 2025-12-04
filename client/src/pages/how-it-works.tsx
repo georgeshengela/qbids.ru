@@ -1,4 +1,5 @@
 import { Header } from "@/components/header";
+import { PageSEO } from "@/components/seo";
 import { useSettings } from "@/hooks/use-settings";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -7,6 +8,7 @@ export default function HowItWorks() {
   const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageSEO page="how-it-works" />
       <Header />
       
       <main className="max-w-[1504px] mx-auto px-4 sm:px-6 lg:px-8 py-8">

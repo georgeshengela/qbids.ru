@@ -1,13 +1,12 @@
-import { useDocumentTitle } from "@/hooks/use-document-title";
 import { useSettings } from "@/hooks/use-settings";
 import { useLanguage } from "@/hooks/use-language";
 import { Header } from "@/components/header";
+import { PageSEO } from "@/components/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 export default function AuctionRules() {
-  useDocumentTitle("Правила аукционов - QBIDS.RU | Условия участия в пенни-аукционах");
   const { formatCurrency } = useSettings();
   const { t } = useLanguage();
 
@@ -90,8 +89,9 @@ export default function AuctionRules() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageSEO page="auction-rules" />
       <Header />
-      
+
       <main className="max-w-[1504px] mx-auto py-8 px-4">
         {/* Hero Section */}
         <div className="text-center mb-12">

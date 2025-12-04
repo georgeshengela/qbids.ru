@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/header";
+import { AuctionSEO } from "@/components/seo";
 import { useAuth } from "@/hooks/use-auth";
 import { useSocket } from "@/hooks/use-socket";
 import { useToast } from "@/hooks/use-toast";
@@ -390,8 +391,11 @@ export default function AuctionDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* SEO Meta Tags */}
+      <AuctionSEO auction={auction} />
+
       <Header />
-      
+
       {/* Breadcrumb Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-[1504px] mx-auto px-4 py-4">

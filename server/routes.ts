@@ -10,6 +10,7 @@ import { timerService } from "./services/timer-service";
 import { botService } from "./services/bot-service";
 import { setSocketIO } from "./socket";
 import { insertUserSchema, insertAuctionSchema, insertBotSchema, insertSettingsSchema } from "@shared/schema";
+import { sitemapService } from "./services/sitemap-service";
 import { z } from "zod";
 
 // Multilingual error messages
@@ -87,6 +88,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Health check failed:", error);
       res.status(503).json({ status: "error", message: "Service unavailable" });
+    }
+  });
+
+  // ============================================
+  // SEO ENDPOINTS - Sitemap and Robots.txt
+  // ============================================
+
+  // Sitemap index - references all sitemaps
+  app.get("/sitemap.xml", async (_req, res) => {
+    try {
+      const sitemap = await sitemapService.generateSitemapIndex();
+      res.header("Content-Type", "application/xml");
+      res.header("Cache-Control", "public, max-age=3600"); // Cache for 1 hour
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating sitemap index:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  // Static pages sitemap
+  app.get("/sitemap-pages.xml", async (_req, res) => {
+    try {
+      const sitemap = await sitemapService.generatePagesSitemap();
+      res.header("Content-Type", "application/xml");
+      res.header("Cache-Control", "public, max-age=3600");
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating pages sitemap:", error);
+      res.status(500).send("Error generating sitemap");
+    }
+  });
+
+  // Auctions sitemap - all auction pages
+  app.get("/sitemap-auctions.xml", async (_req, res) => {
+    try {
+      const sitemap = await sitemapService.generateAuctionsSitemap();
+      res.header("Content-Type", "application/xml");
+      res.header("Cache-Control", "public, max-age=1800"); // Cache for 30 min (auctions change frequently)
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating auctions sitemap:", error);
+      res.status(500).send("Error generating sitemap");
     }
   });
 

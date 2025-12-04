@@ -1,0 +1,45 @@
+# QBIDS.RU Robots.txt
+# Penny Auction Platform - Russia
+
+User-agent: *
+Allow: /
+Allow: /auctions
+Allow: /auction/
+Allow: /how-it-works
+Allow: /support
+Allow: /auction-rules
+Allow: /privacy-policy
+Allow: /terms-of-service
+
+# Disallow admin and user private pages
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /profile
+Disallow: /bid-history
+Disallow: /topup
+Disallow: /payment-success
+Disallow: /payment-cancel
+Disallow: /login
+Disallow: /welcome-preview
+
+# Disallow API endpoints
+Disallow: /api/
+Disallow: /health
+
+# Crawl delay for polite crawling
+Crawl-delay: 1
+
+# Sitemap locations
+Sitemap: https://qbids.ru/sitemap.xml
+Sitemap: https://qbids.ru/sitemap-auctions.xml
+
+# Yandex specific
+User-agent: Yandex
+Allow: /
+Crawl-delay: 2
+Host: https://qbids.ru
+
+# Google specific
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1

@@ -1,11 +1,10 @@
-import { useDocumentTitle } from "@/hooks/use-document-title";
 import { Header } from "@/components/header";
+import { PageSEO } from "@/components/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 
 export default function TermsOfService() {
-  useDocumentTitle("Условия использования - QBIDS.RU | Пользовательское соглашение");
 
   const termssections = [
     {
@@ -99,8 +98,9 @@ export default function TermsOfService() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageSEO page="terms-of-service" />
       <Header />
-      
+
       <main className="max-w-[1504px] mx-auto py-8 px-4">
         {/* Hero Section */}
         <div className="text-center mb-12">

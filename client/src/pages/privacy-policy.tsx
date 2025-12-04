@@ -1,10 +1,9 @@
-import { useDocumentTitle } from "@/hooks/use-document-title";
 import { Header } from "@/components/header";
+import { PageSEO } from "@/components/seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function PrivacyPolicy() {
-  useDocumentTitle("Политика конфиденциальности - QBIDS.RU | Защита персональных данных");
 
   const privacySections = [
     {
@@ -111,8 +110,9 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageSEO page="privacy-policy" />
       <Header />
-      
+
       <main className="max-w-[1504px] mx-auto py-8 px-4">
         {/* Hero Section */}
         <div className="text-center mb-12">
