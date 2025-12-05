@@ -69,13 +69,13 @@ export default function AdminSettings() {
     defaultValues: {
       currency: settings?.currency || "сом",
       currencySymbol: settings?.currencySymbol || "сом",
-      siteName: settings?.siteName || "QBIDS.KG",
+      siteName: settings?.siteName || "QBIDS.ru",
       language: settings?.language || "ru",
       headerTagline: settings?.headerTagline || "Пенни-аукционы в Росии",
       footerDescription: settings?.footerDescription || "Первая пенни-аукционная платформа в Росии. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов.",
       contactAddress: settings?.contactAddress || "г. Бишкек, ул. Чуй 154",
       contactPhone: settings?.contactPhone || "+996 (555) 123-456",
-      contactEmail: settings?.contactEmail || "info@qbids.kg",
+      contactEmail: settings?.contactEmail || "info@qbids.ru",
     },
   });
 
@@ -89,7 +89,7 @@ export default function AdminSettings() {
         language: settings.language,
         contactAddress: settings.contactAddress || "г. Бишкек, ул. Чуй 154",
         contactPhone: settings.contactPhone || "+996 (555) 123-456",
-        contactEmail: settings.contactEmail || "info@qbids.kg",
+        contactEmail: settings.contactEmail || "info@qbids.ru",
       });
     }
   }, [settings, form]);
@@ -231,7 +231,7 @@ export default function AdminSettings() {
                     id="siteName"
                     {...form.register("siteName")}
                     className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
-                    placeholder="QBIDS.KG"
+                    placeholder="QBIDS.ru"
                   />
                   {form.formState.errors.siteName && (
                     <p className="text-sm text-red-500">{form.formState.errors.siteName.message}</p>
@@ -343,7 +343,7 @@ export default function AdminSettings() {
                         type="email"
                         {...form.register("contactEmail")}
                         className="h-11 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
-                        placeholder="info@qbids.kg"
+                        placeholder="info@qbids.ru"
                       />
                       {form.formState.errors.contactEmail && (
                         <p className="text-sm text-red-500">{form.formState.errors.contactEmail.message}</p>
@@ -402,11 +402,11 @@ export default function AdminSettings() {
                 <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
                   <div>
                     <div className="font-medium text-blue-900">Название сайта</div>
-                    <div className="text-sm text-blue-700">{settings?.siteName || "QBIDS.KG"}</div>
+                    <div className="text-sm text-blue-700">{settings?.siteName || "QBIDS.ru"}</div>
                   </div>
                   <div className="text-lg font-bold text-blue-600">
                     <i className="fas fa-globe mr-2"></i>
-                    {settings?.siteName || "QBIDS.KG"}
+                    {settings?.siteName || "QBIDS.ru"}
                   </div>
                 </div>
 
@@ -427,7 +427,7 @@ export default function AdminSettings() {
                     <div className="text-sm text-orange-700 space-y-1">
                       <div><i className="fas fa-map-marker-alt mr-2"></i>{settings?.contactAddress || "г. Бишкек, ул. Чуй 154"}</div>
                       <div><i className="fas fa-phone mr-2"></i>{settings?.contactPhone || "+996 (555) 123-456"}</div>
-                      <div><i className="fas fa-envelope mr-2"></i>{settings?.contactEmail || "info@qbids.kg"}</div>
+                      <div><i className="fas fa-envelope mr-2"></i>{settings?.contactEmail || "info@qbids.ru"}</div>
                     </div>
                   </div>
                   <div className="text-2xl text-orange-600">

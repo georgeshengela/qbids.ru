@@ -184,7 +184,7 @@ export function Header() {
                         <i className="fas fa-gavel text-white text-xl"></i>
                       </div>
                       <div>
-                        <SheetTitle className="text-slate-900 text-xl font-bold">{settings?.siteName || "QBIDS.KG"}</SheetTitle>
+                        <SheetTitle className="text-slate-900 text-xl font-bold">{settings?.siteName || "QBIDS.ru"}</SheetTitle>
                         <p className="text-slate-600 text-sm">
                           {settings?.language === "ru" && "Пенни-аукционы в России"}
                           {settings?.language === "en" && "Penny Auctions in Russia"}

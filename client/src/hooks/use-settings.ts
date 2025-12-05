@@ -16,7 +16,7 @@ export function useSettings() {
   const defaultSettings = { 
     currency: "сом", 
     currencySymbol: "сом", 
-    siteName: "QBIDS.KG", 
+    siteName: "QBIDS.ru", 
     language: "ru",
     headerTagline: "Пенни-аукционы в Росии",
     footerDescription: "Первая пенни-аукционная платформа в Росии. Выигрывайте премиальные товары за копейки с нашей честной и прозрачной системой аукционов."

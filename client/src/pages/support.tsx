@@ -11,7 +11,7 @@ export default function Support() {
       icon: "fas fa-envelope",
       title: "Электронная почта",
       description: "Напишите нам на email для получения подробной помощи",
-      contact: "support@qbids.kg",
+      contact: "support@qbids.ru",
       responseTime: "В течение 24 часов",
       color: "blue"
     },
@@ -105,7 +105,7 @@ export default function Support() {
               Часто задаваемые вопросы
             </CardTitle>
             <CardDescription>
-              Ответы на самые популярные вопросы о работе QBIDS.KG
+              Ответы на самые популярные вопросы о работе QBIDS.ru
             </CardDescription>
           </CardHeader>
           <CardContent>

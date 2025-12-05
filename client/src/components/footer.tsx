@@ -16,7 +16,7 @@ export function Footer() {
                 <i className="fas fa-gavel text-white text-sm"></i>
               </div>
               <h3 className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                {settings?.siteName || "QBIDS.KG"}
+                {settings?.siteName || "QBIDS.ru"}
               </h3>
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
@@ -127,7 +127,7 @@ export function Footer() {
               </div>
               <div className="flex items-center text-gray-300 text-sm">
                 <i className="fas fa-envelope mr-3 text-yellow-400"></i>
-                <span>{settings?.contactEmail || "info@qbids.kg"}</span>
+                <span>{settings?.contactEmail || "info@qbids.ru"}</span>
               </div>
               <div className="flex items-center text-gray-300 text-sm">
                 <i className="fas fa-clock mr-3 text-yellow-400"></i>
@@ -208,7 +208,7 @@ export function Footer() {
         <div className="border-t border-gray-700 mt-8 pt-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <p className="text-gray-400 text-sm mb-2 md:mb-0">
-              © {new Date().getFullYear()} {settings?.siteName || "QBIDS.KG"}. 
+              © {new Date().getFullYear()} {settings?.siteName || "QBIDS.ru"}. 
               {settings?.language === "ru" && " Все права защищены."}
               {settings?.language === "en" && " All rights reserved."}
               {settings?.language === "ka" && " ყველა უფლება დაცულია."}

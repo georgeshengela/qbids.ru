@@ -86,12 +86,12 @@ export default function TopUp() {
     if (descriptionMeta) {
       descriptionMeta.setAttribute(
         'content',
-        'Пополните баланс для участия в аукционах QBIDS.KG'
+        'Пополните баланс для участия в аукционах QBIDS.ru'
       );
     } else {
       const meta = document.createElement('meta');
       meta.name = 'description';
-      meta.content = 'Пополните баланс для участия в аукционах QBIDS.KG';
+      meta.content = 'Пополните баланс для участия в аукционах QBIDS.ru';
       document.head.appendChild(meta);
     }
   }, [t]);

@@ -254,7 +254,7 @@ export const translations = {
     
     // Welcome Modal
     welcomeTitle: "Добро пожаловать, {username}!",
-    welcomeDescription: "Поздравляем с успешной регистрацией на QBIDS.KG",
+    welcomeDescription: "Поздравляем с успешной регистрацией на QBIDS.ru",
     freeBids: "5 бесплатных бидов!",
     giftForNewUsers: "Подарок для новых пользователей",
     welcomeGiftMessage: "Мы зачислили на ваш баланс 5 бесплатных бидов, чтобы вы могли начать участвовать в аукционах прямо сейчас!",
@@ -352,7 +352,7 @@ export const translations = {
     
     // How It Works Page
     howPennyAuctionsWorkTitle: "Как работают penny-аукционы?",
-    simpleGuideSubtitle: "Простое руководство по участию в аукционах qbids.kg",
+    simpleGuideSubtitle: "Простое руководство по участию в аукционах qbids.ru",
     step1Title: "Регистрация",
     step1Desc: "Создайте аккаунт и пополните баланс для участия в аукционах",
     step2Title: "Выбор аукциона", 
@@ -726,7 +726,7 @@ export const translations = {
     
     // Welcome Modal
     welcomeTitle: "Welcome, {username}!",
-    welcomeDescription: "Congratulations on successfully registering on QBIDS.KG",
+    welcomeDescription: "Congratulations on successfully registering on QBIDS.ru",
     freeBids: "5 free bids!",
     giftForNewUsers: "Gift for new users",
     welcomeGiftMessage: "We have credited your balance with 5 free bids so you can start participating in auctions right away!",
@@ -824,7 +824,7 @@ export const translations = {
     
     // How It Works Page
     howPennyAuctionsWorkTitle: "How do penny auctions work?",
-    simpleGuideSubtitle: "A simple guide to participating in qbids.kg auctions",
+    simpleGuideSubtitle: "A simple guide to participating in qbids.ru auctions",
     step1Title: "Registration",
     step1Desc: "Create an account and top up your balance to participate in auctions",
     step2Title: "Choose Auction",
@@ -1190,7 +1190,7 @@ export const translations = {
     
     // Welcome Modal
     welcomeTitle: "კეთილი იყოს თქვენი მობრძანება, {username}!",
-    welcomeDescription: "გილოცავთ QBIDS.KG-ზე წარმატებულ რეგისტრაციას",
+    welcomeDescription: "გილოცავთ QBIDS.ru-ზე წარმატებულ რეგისტრაციას",
     freeBids: "5 უფასო ფსონი!",
     giftForNewUsers: "საჩუქარი ახალი მომხმარებლებისთვის",
     welcomeGiftMessage: "ჩვენ თქვენს ბალანსზე ვაკრედიტებთ 5 უფასო ფსონს, რათა შეძლოთ აუქციონებში მონაწილეობა ახლავე!",
@@ -1288,7 +1288,7 @@ export const translations = {
     
     // How It Works Page
     howPennyAuctionsWorkTitle: "როგორ მუშაობს პენი აუქციონები?",
-    simpleGuideSubtitle: "მარტივი გზამკვლევი qbids.kg აუქციონებში მონაწილეობისთვის",
+    simpleGuideSubtitle: "მარტივი გზამკვლევი qbids.ru აუქციონებში მონაწილეობისთვის",
     step1Title: "რეგისტრაცია",
     step1Desc: "შექმენით ანგარიში და შეავსეთ ბალანსი აუქციონებში მონაწილეობისთვის",
     step2Title: "აუქციონის არჩევა",
